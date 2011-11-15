@@ -1,0 +1,21 @@
+{
+    "name": "phony",
+    "description": "Library for translating to/from the phonetic alphabet",
+    "version": "1.0.0",
+    "homepage": "http://forchoon.com/projects/javascript/phony-js/",
+    "bugs": {
+        "url" : "https://github.com/neocotic/phony.js/issues"
+    },
+    "author": "Alasdair Mercer <mercer.alasdair@gmail.com> (http://forchoon.com)",
+    "licenses": [{
+        "type" : "GPLv3",
+        "url" : "https://github.com/neocotic/phony.js/raw/master/LICENSE.md"
+    }],
+    "keywords": ["decode", "encode", "fun", "util"],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/neocotic/phony.js.git"
+    },
+    "main": "phony.js",
+    "ender": "ender.js"
+}
