@@ -19,14 +19,17 @@ phony.to(data[, callback])
 
 ### Data Object
 
-* *{String}* **[alphabet]** - Optional: The phonetic alphabet to be used to
-  translate the message (defaults to `ITU`).
-* *{Boolean}* **[caseSensitive]** - Optional: Whether or not the translation
-  should be case sensitive (defaults to `true`).
-* *{String}* **message** - The message to be translated.
-* *{Boolean}* **[omitSpace]** - Optional: Whether or not words should be split
-  up by "Space" (defaults to `false`).
+* `[alphabet]` - *Optional:* The phonetic alphabet to be used to translate the
+  message (defaults to `"ITU"`).
   * This property is only used by `phony.to`.
+* `[caseSensitive]` - *Optional:* Whether or not the translation should be case
+  sensitive (defaults to `true`).
+* `message` - The string to be translated.
+* `[omitSpace]` - *Optional:* Whether or not words should be split up by
+  "Space" (defaults to `false`).
+  * This property is only used by `phony.to`.
+* `[round]` - *Optional:* Whether or not hundreds and thousands should be
+  rounded (defaults to `true`).
 
 
 ## Customization
@@ -40,7 +43,7 @@ phony.defineChar(character, translation[, callback])
 ## Miscellaneous
 
 ```
-phony.noConflict()
+phony.noConflict([callback])
 ```
 
 ```
