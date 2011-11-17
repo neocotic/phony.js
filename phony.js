@@ -48,7 +48,7 @@
 
   var
     // Map of supported characters to their phonetic alphabet counterparts.
-    // This is a multi-dimensional array and should be treated as such
+    // This is a multi-dimensional array and should be treated as such.
     chars         = [
     /* Char(s) | ITU         | ICAO   | FAA    | ANSI                      */
     /* Letters                                                             */
