@@ -8,8 +8,8 @@
        \ \_\                            /\___/  \ \____/      
         \/_/                            \/__/    \/___/       
 
-Phony is a pure JavaScript library for translating to/from the [NATO phonetic
-alphabet](http://en.wikipedia.org/wiki/NATO_phonetic_alphabet).
+[Phony][] is a pure JavaScript library for translating to/from the [NATO
+phonetic alphabet][].
 
 ## Standard Usage
 
@@ -67,4 +67,7 @@ phony.VERSION
 If you want more information or examples of using this library please visit the
 project's homepage;
 
-<http://forchoon.com/projects/javascript/phony-js/>
+http://forchoon.com/projects/javascript/phony-js/
+
+[phony]: http://forchoon.com/projects/javascript/phony-js/
+[nato phonetic alphabet]: http://en.wikipedia.org/wiki/NATO_phonetic_alphabet
