@@ -1,4 +1,4 @@
-// [phony.js](http://forchoon.com/projects/javascript/phony-js/) 1.0.0
+// [phony.js](http://forchoon.com/projects/javascript/phony-js/) 1.0.1
 // (c) 2011 Alasdair Mercer
 // Licensed under the GPL Version 3 license.
 // For all details and documentation:
@@ -186,9 +186,9 @@
   // function will simply be returned.
   // When the function provided is called the specified context will be
   // applied.
-  function syncSafe(fn, ctx, cb) {
+  function syncSafe(fn, cb, ctx) {
     try {
-      var ret = fn.apply(ctx);
+      var ret = fn.apply(ctx || this);
       // All went OK, so handle result.
       if (typeof cb === 'function') return cb(null, ret);
       return ret;
@@ -256,7 +256,7 @@
     }()),
 
     // Current version of `phony`.
-    VERSION: '1.0.0',
+    VERSION: '1.0.1',
 
     // Translation functions
     // ---------------------
@@ -305,7 +305,7 @@
           }
         }
         return ret;
-      }, this, callback);
+      }, callback, this);
     },
 
     // Translate the message provided to the phonetic alphabet.
@@ -412,7 +412,7 @@
           }
         }
         return ret;
-      }, this, callback);
+      }, callback, this);
     },
 
     // Customization functions
@@ -467,7 +467,7 @@
         } else {
           chars.push([character, translation]);
         }
-      }, this, callback);
+      }, callback, this);
     },
 
     // Utility functions
@@ -484,7 +484,7 @@
       return syncSafe(function () {
         root.phony = previousPhony;
         return this;
-      }, this, callback);
+      }, callback, this);
     }
 
   };
