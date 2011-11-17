@@ -50,7 +50,7 @@
     // Map of supported characters to their phonetic alphabet counterparts.
     // This is a multi-dimensional array and should be treated as such.
     chars         = [
-    /* Char(s) | ITU         | ICAO   | FAA    | ANSI                      */
+    /* Char(s)  | ITU         | ICAO   | FAA    | ANSI                     */
     /* Letters                                                             */
       ['\u0041', ['Alfa',       null,    null,    'Alpha' ]], /* A         */
       ['\u0042',  'Bravo'                                  ], /* B         */
