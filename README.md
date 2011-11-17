@@ -1,6 +1,14 @@
-# [phony.js](http://forchoon.com/projects/javascript/phony-js/)
+           __                                                 
+          /\ \                                   __           
+     _____\ \ \___     ___    ___   __  __      /\_\    ____  
+    /\ '__`\ \  _ `\  / __`\/' _ `\/\ \/\ \     \/\ \  /',__\ 
+    \ \ \L\ \ \ \ \ \/\ \L\ \\ \/\ \ \ \_\ \  __ \ \ \/\__, `\
+     \ \ ,__/\ \_\ \_\ \____/ \_\ \_\/`____ \/\_\_\ \ \/\____/
+      \ \ \/  \/_/\/_/\/___/ \/_/\/_/`/___/> \/_/\ \_\ \/___/ 
+       \ \_\                            /\___/  \ \____/      
+        \/_/                            \/__/    \/___/       
 
-A pure JavaScript library for translating to/from the [NATO phonetic
+Phony is a pure JavaScript library for translating to/from the [NATO phonetic
 alphabet](http://en.wikipedia.org/wiki/NATO_phonetic_alphabet).
 
 ## Standard Usage
