@@ -1,5 +1,5 @@
 !function ($) {
-    $.ender({
-        phony: require('phony')
-    })
+  $.ender({
+    phony: require('phony')
+  })
 }(ender)
