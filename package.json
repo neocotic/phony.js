@@ -7,7 +7,7 @@
   "author"      : "Alasdair Mercer <mercer.alasdair@gmail.com> (http://forchoon.com)",
   "licenses"    : [{"type" : "GPLv3",
                     "url"  : "https://github.com/neocotic/phony.js/raw/master/LICENSE.md"}],
-  "keywords"    : ["decode", "encode", "fun", "util"],
+  "keywords"    : ["alphabet", "decode", "encode", "fun", "phonetic", "translate", "util"],
   "repository"  : {"type"  : "git",
                    "url"   : "git://github.com/neocotic/phony.js.git"},
   "main"        : "phony.js",
