@@ -489,7 +489,7 @@
 
   };
 
-  // Export `phony` for Node.js and CommonJS.
+  // Export `phony` for NodeJS and CommonJS.
   if (exports) {
     if (module && module.exports) {
       exports = module.exports = phony;
