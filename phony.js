@@ -477,7 +477,7 @@
     // previous owner.
     // Returns a reference to `phony`.
     // Optionally, a callback function can be provided which will be called
-    // when the character has been defined. If an error occurs it will be
+    // after the ownership has been restored. If an error occurs it will be
     // passed as the first argument to this function, otherwise this argument
     // will be `null`.
     noConflict: function (callback) {
@@ -490,8 +490,8 @@
   };
 
   // Export `phony` for Node.js and CommonJS.
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
+  if (exports) {
+    if (module && module.exports) {
       exports = module.exports = phony;
     }
     exports.phony = phony;
