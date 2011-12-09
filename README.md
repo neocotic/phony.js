@@ -67,7 +67,7 @@ phony.VERSION
 If you want more information or examples of using this library please visit the
 project's homepage;
 
-http://forchoon.com/projects/javascript/phony-js/
+http://neocotic.com/phony.js
 
-[phony]: http://forchoon.com/projects/javascript/phony-js/
+[phony]: http://neocotic.com/phony.js
 [nato phonetic alphabet]: http://en.wikipedia.org/wiki/NATO_phonetic_alphabet

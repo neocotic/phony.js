@@ -1,13 +1,13 @@
-// [phony.js](http://forchoon.com/projects/javascript/phony-js/) 1.0.1
-// (c) 2011 Alasdair Mercer
-// Licensed under the GPL Version 3 license.
-// For all details and documentation:
-// http://neocotic.github.com/phony.js
+// [phony.js](http://neocotic.com/phony.js) 1.0.1  
+// (c) 2011 Alasdair Mercer  
+// Freely distributable under the MIT license.  
+// For all details and documentation:  
+// <http://neocotic.com/phony.js>
 
 (function (root) {
 
   // Private constants
-  // ---------
+  // -----------------
 
   var
     // Indices used to map phonetic alphabets to supported characters.
@@ -23,7 +23,7 @@
     // Easy access to the rounded representation of a number in the hundreds.
     HUNDRED          = 'Hundred',
 
-    // Regular expression used to match decimal numbers.
+    // Regular expression used to match decimal numbers.  
     // If a decimal number is found rounding should not be performed.
     R_DECIMAL        = /([\d,]+)\.(\d+)$/,
 
@@ -44,10 +44,10 @@
     WORD_GAP         = 'Space';
 
   // Private variables
-  // ---------
+  // -----------------
 
   var
-    // Map of supported characters to their phonetic alphabet counterparts.
+    // Map of supported characters to their phonetic alphabet counterparts.  
     // This is a multi-dimensional array and should be treated as such.
     chars         = [
     /* Char(s)  | ITU         | ICAO   | FAA    | ANSI                     */
@@ -107,8 +107,9 @@
   // Private functions
   // -----------------
 
-  // Determine the case of a string through comparison.
+  // Determine the case of a string through comparison.  
   // Possible return values:
+  // 
   // * `-1` - Lower case
   // * `0` - N/A (use title case)
   // * `1` - Upper case
@@ -120,7 +121,7 @@
     }
   }
 
-  // Return the index of the specified alphabet.
+  // Return the index of the specified alphabet.  
   // If no alphabet is specified, or no matching alphabet could be found, the
   // index of `DEFAULT_ALPHABET` will be returned.
   function findAlphabet(name) {
@@ -163,7 +164,7 @@
     }
   }
 
-  // Prepare the string to simplify translation.
+  // Prepare the string to simplify translation.  
   // The return value is a multi-dimensional array and should be treated as
   // such.
   function prepare(str, wordSplitter, letterSplitter) {
@@ -177,13 +178,13 @@
     return ret;
   }
 
-  // Safely handle cases where synchronization methodology may vary.
+  // Safely handle cases where synchronization methodology may vary.  
   // In cases where a callback function was specified it should be used to pass
   // the return value of the function provided or any errors that were thrown
   // during the process. Either the return value of the callback function or
-  // the error encountered will be returned here.
+  // the error encountered will be returned here.  
   // Otherwise; errors will be thrown as normal and the return value of the
-  // function will simply be returned.
+  // function will simply be returned.  
   // When the function provided is called the specified context will be
   // applied.
   function syncSafe(fn, cb, ctx) {
@@ -204,7 +205,7 @@
     return str[0].toUpperCase() + str.substring(1).toLowerCase();
   }
 
-  // Translate a matched string to/from the phonetic alphabet.
+  // Translate a matched string to/from the phonetic alphabet.  
   // If a specific alphabet is provided an attempt will be made to use its
   // variation but will fall back on the default representation if not found.
   function translate(original, matched, caseSensitive, alphabet) {
@@ -221,7 +222,7 @@
     return translate(original, str || '', caseSensitive);
   }
 
-  // Validate a translation included in a user-defined character mapping.
+  // Validate a translation included in a user-defined character mapping.  
   // The return value will be the normalised version of the translation and any
   // problems with the validation will be thrown as errors.
   function validateTranslation(translation, nullCheck) {
@@ -244,7 +245,7 @@
   var phony = {
 
     // Constants
-    // ----------------
+    // ---------
 
     // Acronyms of the supported phonetic alphabets.
     ALPHABETS: (function () {
@@ -261,9 +262,9 @@
     // Translation functions
     // ---------------------
 
-    // Translate the message from the phonetic alphabet.
+    // Translate the message from the phonetic alphabet.  
     // No specific alphabet is required by this function as it will search all
-    // possible translations for a match.
+    // possible translations for a match.  
     // Optionally, a callback function can be provided which will be called
     // with the result as the second argument. If an error occurs it will be
     // passed as the first argument to this function, otherwise this argument
@@ -308,8 +309,8 @@
       }, callback, this);
     },
 
-    // Translate the message provided to the phonetic alphabet.
-    // If no alphabet is specified then the default alphabet will be used.
+    // Translate the message provided to the phonetic alphabet.  
+    // If no alphabet is specified then the default alphabet will be used.  
     // Optionally, a callback function can be provided which will be called
     // with the result as the second argument. If an error occurs it will be
     // passed as the first argument to this function, otherwise this argument
@@ -367,7 +368,7 @@
               }
               // Handle rounded thousands, but millions can forget about it.
               // Like hundreds, rounded thousands can't begin with zero, it
-              // just wouldn't make any sense.
+              // just wouldn't make any sense.  
               // Comma-separated thousands are supported the comma position
               // must be valid or it won't be rounded.
               if (R_THOUSAND.test(str)) {
@@ -418,17 +419,19 @@
     // Customization functions
     // -----------------------
 
-    // Map a new translation to the character provided.
+    // Map a new translation to the character provided.  
     // If a mapping already exists for the specified character, that mapping
-    // will be modified.
+    // will be modified.  
     // If `translation` is an array, its elements should be specified in the
     // following order;
+    // 
     // * ITU
     // * ICAO
     // * FAA
     // * ANSI
+    // 
     // Use `null` to fill the gaps and feel free to leave off any unused
-    // alphabet translations from the end.
+    // alphabet translations from the end.  
     // Optionally, a callback function can be provided which will be called
     // when the character has been defined. If an error occurs it will be
     // passed as the first argument to this function, otherwise this argument
@@ -474,8 +477,8 @@
     // -----------------
 
     // Run phony.js in *noConflict* mode, returning the `phony` variable to its
-    // previous owner.
-    // Returns a reference to `phony`.
+    // previous owner.  
+    // Returns a reference to `phony`.  
     // Optionally, a callback function can be provided which will be called
     // after the ownership has been restored. If an error occurs it will be
     // passed as the first argument to this function, otherwise this argument
