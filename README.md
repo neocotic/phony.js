@@ -13,19 +13,16 @@ phonetic alphabet][].
 
 ## Standard Usage
 
-### Translate From...
-
-```
-phony.from(data[, callback])
-```
-
-### Translate To...
-
-```
-phony.to(data[, callback])
+``` javascript
+phony.from([data|message][, callback(error, result)])
+phony.to([data|message][, callback(error, result)])
 ```
 
-### Data Object
+### First Argument
+
+[Phony][] allows either a `data` object or string `message` to be passed as the
+first argument. If a string is used all options will use their default value;
+otherwise they can be set using the following properties;
 
 * `[alphabet]` - *Optional:* The phonetic alphabet to be used to translate the
   message (defaults to `"ITU"`).
@@ -39,35 +36,42 @@ phony.to(data[, callback])
 * `[round]` - *Optional:* Whether or not hundreds and thousands should be
   rounded (defaults to `true`).
 
-
 ## Customization
 
-### Define Character
-
-```
-phony.defineChar(character, translation[, callback])
+``` javascript
+phony.defineChar(character, translation[, callback(error)])
 ```
 
 ## Miscellaneous
 
-```
-phony.noConflict([callback])
-```
-
-```
+``` javascript
+phony.noConflict([callback(error)])
 phony.ALPHABETS
-```
-
-```
 phony.VERSION
 ```
 
-## Further Information
+## Bugs
 
-If you want more information or examples of using this library please visit the
-project's homepage;
+If you have any problems with this library or would like to see the changes
+currently in development you can do so here;
+
+https://github.com/neocotic/phony.js/issues
+
+Developers should run all tests in `test/index.html` and ensure they pass
+before submitting a pull request.
+
+## Questions?
+
+Take a look at `docs/phony.html` to get a better understanding of what the code
+is doing.
+
+If that doesn't help, feel free to follow me on Twitter, [@neocotic][].
+
+However, if you want more information or examples of using this library please
+visit the project's homepage;
 
 http://neocotic.com/phony.js
 
+[@neocotic]: https://twitter.com/#!/neocotic
 [phony]: http://neocotic.com/phony.js
 [nato phonetic alphabet]: http://en.wikipedia.org/wiki/NATO_phonetic_alphabet

@@ -164,6 +164,13 @@
     }
   }
 
+  // Return the **last** function in the arguments provided, where possible.
+  function findLastFunction() {
+    for (var i = arguments.length; i >= 0; --i) {
+      if (typeof arguments[i] === 'function') return arguments[i];
+    }
+  }
+
   // Prepare the string to simplify translation.  
   // The return value is a multi-dimensional array and should be treated as
   // such.
@@ -270,8 +277,17 @@
     // passed as the first argument to this function, otherwise this argument
     // will be `null`.
     from: function (data, callback) {
+      callback = findLastFunction(data, callback);
       return syncSafe(function () {
-        data = data || {};
+        switch (typeof data) {
+        case 'object': break;
+        case 'string':
+          data = {message: data};
+          break;
+        default:
+          data = {};
+          break;
+        }
         var
           alphabet      = findAlphabet(),
           caseSensitive = (typeof data.caseSensitive === 'undefined') ? true :
@@ -316,8 +332,17 @@
     // passed as the first argument to this function, otherwise this argument
     // will be `null`.
     to: function (data, callback) {
+      callback = findLastFunction(data, callback);
       return syncSafe(function () {
-        data = data || {};
+        switch (typeof data) {
+        case 'object': break;
+        case 'string':
+          data = {message: data};
+          break;
+        default:
+          data = {};
+          break;
+        }
         var
           alphabet      = findAlphabet(data.alphabet),
           caseSensitive = (typeof data.caseSensitive === 'undefined') ? true :
