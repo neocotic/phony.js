@@ -1,0 +1,44 @@
+{
+  "name": "phony",
+  "version": "1.0.1",
+  "description": "Library for translating to/from the phonetic alphabet",
+  "homepage": "http://neocotic.com/phony.js",
+  "bugs": {
+    "url": "https://github.com/neocotic/phony.js/issues"
+  },
+  "authors": [
+    {
+      "name": "Alasdair Mercer",
+      "email": "mercer.alasdair@gmail.com",
+      "homepage": "http://neocotic.com"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "alphabet",
+    "decode",
+    "encode",
+    "fun",
+    "phonetic",
+    "translate",
+    "util"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/neocotic/phony.js.git"
+  },
+  "main": "phony.min.js",
+  "ignore": [
+    "**/.*",
+    "docs",
+    "test",
+    "AUTHORS.md",
+    "CHANGES.md",
+    "CONTRIBUTING.md",
+    "Gruntfile.js",
+    "INSTALL.md",
+    "README.md",
+    "bower.json",
+    "package.json"
+  ]
+}

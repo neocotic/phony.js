@@ -3,6 +3,7 @@ test
 .travis.yml
 AUTHORS.md
 CHANGES.md
+CONTRIBUTING.md
 Gruntfile.js
 README.md
 phony.min.js
