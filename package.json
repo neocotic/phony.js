@@ -1,5 +1,5 @@
 {
-  "name"        : "phony",
+  "name"        : "node-phony",
   "description" : "Library for translating to/from the phonetic alphabet",
   "version"     : "1.0.1",
   "homepage"    : "http://neocotic.com/phony.js",
