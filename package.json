@@ -10,6 +10,5 @@
   "keywords"    : ["alphabet", "decode", "encode", "fun", "phonetic", "translate", "util"],
   "repository"  : {"type"  : "git",
                    "url"   : "git://github.com/neocotic/phony.js.git"},
-  "main"        : "phony.js",
-  "ender"       : "ender.js"
+  "main"        : "phony.js"
 }
