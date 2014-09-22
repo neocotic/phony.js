@@ -1,77 +1,121 @@
-           __                                                 
-          /\ \                                   __           
-     _____\ \ \___     ___    ___   __  __      /\_\    ____  
-    /\ '__`\ \  _ `\  / __`\/' _ `\/\ \/\ \     \/\ \  /',__\ 
+           __
+          /\ \                                   __
+     _____\ \ \___     ___    ___   __  __      /\_\    ____
+    /\ '__`\ \  _ `\  / __`\/' _ `\/\ \/\ \     \/\ \  /',__\
     \ \ \L\ \ \ \ \ \/\ \L\ \\ \/\ \ \ \_\ \  __ \ \ \/\__, `\
      \ \ ,__/\ \_\ \_\ \____/ \_\ \_\/`____ \/\_\_\ \ \/\____/
-      \ \ \/  \/_/\/_/\/___/ \/_/\/_/`/___/> \/_/\ \_\ \/___/ 
-       \ \_\                            /\___/  \ \____/      
-        \/_/                            \/__/    \/___/       
+      \ \ \/  \/_/\/_/\/___/ \/_/\/_/`/___/> \/_/\ \_\ \/___/
+       \ \_\                            /\___/  \ \____/
+        \/_/                            \/__/    \/___/
 
-[Phony][] is a pure JavaScript library for translating to/from the [NATO
-phonetic alphabet][].
+[phony.js][0] is a pure JavaScript library for translating to/from the [NATO phonetic alphabet][3] that supports
+extensible characters.
 
-## Standard Usage
+[![Build Status](https://travis-ci.org/neocotic/phony.js.svg?branch=develop)][1]
+[![Dependency Status](https://gemnasium.com/neocotic/phony.js.svg)][4]
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)][5]
 
-``` javascript
-phony.from([data|message][, callback(error, result)])
-phony.to([data|message][, callback(error, result)])
+## Install
+
+Install using the package manager for your desired environment(s):
+
+``` bash
+# for node.js:
+$ npm install node-phony
+# OR; for the browser:
+$ bower install phony
 ```
 
-### First Argument
+This library has no dependencies on any other library.
 
-[Phony][] allows either a `data` object or string `message` to be passed as the
-first argument. If a string is used all options will use their default value;
-otherwise they can be set using the following properties;
+## Usage
 
-* `[alphabet]` - *Optional:* The phonetic alphabet to be used to translate the
-  message (defaults to `"ITU"`).
-  * This property is only used by `phony.to`.
-* `[caseSensitive]` - *Optional:* Whether or not the translation should be case
-  sensitive (defaults to `true`).
-* `message` - The string to be translated.
-* `[omitSpace]` - *Optional:* Whether or not words should be split up by
-  "Space" (defaults to `false`).
-  * This property is only used by `phony.to`.
-* `[round]` - *Optional:* Whether or not hundreds and thousands should be
-  rounded (defaults to `true`).
+The API has been completely redesigned to simplify translating to and from the phonetic alphabet by simply passing a
+string to the `to` and `from` functions respectively.
 
-## Customization
+Both of which also accept an optional `options` parameter which can currently contain the following (all of which are
+optional themselves):
+
+| Option        | Description                                              | Default |
+| ------------- | -------------------------------------------------------- | ------- |
+| alphabet      | Name of the alphabet to be used to translate the message | `"ITU"` |
+| caseSensitive | Whether the translation should be case sensitive         | `true`  |
+| omitSpace     | Whether words should be split up by `"Space"`            | `false` |
+| round         | Whether hundreds and thousands should be rounded         | `true`  |
+
+It's important to note that the same options should be used in order for bidirectional translations to work.
+
+### `to(message[, options])`
+
+Translates the `message` parameter *to* the phonetic alphabet.
 
 ``` javascript
-phony.defineChar(character, translation[, callback(error)])
+console.log(phony.to('SOS')); // "Sierra Oscar Sierra"
 ```
 
-## Miscellaneous
+### `from(message[, options])`
+
+Translates the `message` parameter *from* the phonetic alphabet.
 
 ``` javascript
-phony.noConflict([callback(error)])
-phony.ALPHABETS
-phony.VERSION
+console.log(phony.from('Sierra Oscar Sierra')); // "SOS"
+```
+
+### Customization
+
+#### `ALPHABETS`
+
+TODO: Document
+
+### Miscellaneous
+
+#### `noConflict()`
+Returns `phony` in a no-conflict state, reallocating the `phony` global variable name to its previous owner, where
+possible.
+
+This is really just intended for use within a browser.
+
+``` html
+<script src="/path/to/conflict-lib.js"></script>
+<script src="/path/to/phony.min.js"></script>
+<script>
+  var phonyNC = phony.noConflict();
+  // Conflicting lib works again and use phonyNC for this library onwards...
+</script>
+```
+
+#### `VERSION`
+The current version of `phony`.
+
+``` javascript
+console.log(phony.VERSION); // "1.0.1"
 ```
 
 ## Bugs
 
-If you have any problems with this library or would like to see the changes
-currently in development you can do so here;
+If you have any problems with this library or would like to see changes currently in development you can do so
+[here][6].
 
-https://github.com/neocotic/phony.js/issues
+## Contributors
 
-Developers should run all tests in `test/index.html` and ensure they pass
-before submitting a pull request.
+If you want to contribute, you're a legend! Information on how you can do so can be found in [CONTRIBUTING.md][8]. We
+want your suggestions and pull requests!
 
-## Questions?
+A list of [phony.js][0] contributors can be found in [AUTHORS.md][7].
 
-Take a look at `docs/phony.html` to get a better understanding of what the code
-is doing.
+## License
 
-If that doesn't help, feel free to follow me on Twitter, [@neocotic][].
+Copyright (c) 2011 Alasdair Mercer
 
-However, if you want more information or examples of using this library please
-visit the project's homepage;
+See [LICENSE.md][9] for more information on our MIT license.
 
-http://neocotic.com/phony.js
-
-[@neocotic]: https://twitter.com/#!/neocotic
-[phony]: http://neocotic.com/phony.js
-[nato phonetic alphabet]: http://en.wikipedia.org/wiki/NATO_phonetic_alphabet
+[0]: http://neocotic.com/phony.js
+[1]: https://travis-ci.org/neocotic/phony.js
+[2]: https://twitter.com/neocotic
+[3]: https://en.wikipedia.org/wiki/NATO_phonetic_alphabet
+[4]: https://gemnasium.com/neocotic/phony.js
+[5]: http://gruntjs.com
+[6]: https://github.com/neocotic/phony.js/issues
+[7]: https://github.com/neocotic/phony.js/blob/master/AUTHORS.md
+[8]: https://github.com/neocotic/phony.js/blob/master/CONTRIBUTING.md
+[9]: https://github.com/neocotic/phony.js/blob/master/LICENSE.md
