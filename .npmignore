@@ -1,2 +1,9 @@
-/docs
-/test
+docs
+test
+.travis.yml
+AUTHORS.md
+CHANGES.md
+Gruntfile.js
+README.md
+phony.min.js
+phony.min.map
