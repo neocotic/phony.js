@@ -161,15 +161,6 @@
     }
   };
 
-  // Return the **last** function in the arguments provided, where possible.
-  var findLastFunction = function() {
-    for (var i = arguments.length; i >= 0; --i) {
-      if (typeof arguments[i] === 'function') {
-        return arguments[i];
-      }
-    }
-  };
-
   // Return the alphabet mapping that matches the `name` provided.
   var getAlphabet = function(name) {
     return ALPHABETS[name];
@@ -189,34 +180,6 @@
     }
 
     return ret;
-  };
-
-  // Safely handle cases where synchronization methodology may vary.
-  // In cases where a callback function was specified it should be used to pass the return value of the function
-  // provided or any errors that were thrown during the process. Either the return value of the callback function or
-  // the error encountered will be returned here.
-  // Otherwise; errors will be thrown as normal and the return value of the function will simply be returned.
-  // When the function provided is called the specified context will be applied.
-  var syncSafe = function(fn, cb, ctx) {
-    var ret;
-
-    try {
-      // All went OK, so handle result.
-      ret = fn.apply(ctx || this);
-
-      if (typeof cb === 'function') {
-        return cb(null, ret);
-      }
-
-      return ret;
-    } catch (e) {
-      // Something went wrong, so bubble the error.
-      if (typeof cb === 'function') {
-        return cb(e);
-      } else {
-        throw e;
-      }
-    }
   };
 
   // Transform a string in to title case.
@@ -287,195 +250,181 @@
     // Current version of `phony`.
     VERSION: '1.0.1',
 
-    // Translation functions
-    // ---------------------
+    // Primary functions
+    // -----------------
 
     // Translate the message from the phonetic alphabet.
     // No specific alphabet is required by this function as it will search all possible translations for a match.
-    // Optionally, a callback function can be provided which will be called with the result as the second argument. If
-    // an error occurs it will be passed as the first argument to this function, otherwise this argument will be
-    // `null`.
-    from: function(data, callback) {
-      callback = findLastFunction(data, callback);
+    from: function(data) {
+      switch (typeof data) {
+        case 'object': break;
+        case 'string':
+          data = {message: data};
+          break;
+        default:
+          data = {};
+          break;
+      }
 
-      return syncSafe(function() {
-        switch (typeof data) {
-          case 'object': break;
-          case 'string':
-            data = {message: data};
-            break;
-          default:
-            data = {};
-            break;
-        }
+      var alphabet      = getAlphabet();
+      var caseSensitive = (typeof data.caseSensitive === 'undefined') ? true : data.caseSensitive;
+      var charGap       = caseSensitive ? CHAR_GAP.toLowerCase() : CHAR_GAP;
+      var ret           = '';
+      var round         = (typeof data.round === 'undefined') ? true : data.round;
+      var value         = data.message || '';
+      var wordGap       = caseSensitive ? WORD_GAP.toLowerCase() : WORD_GAP;
 
-        var alphabet      = getAlphabet();
-        var caseSensitive = (typeof data.caseSensitive === 'undefined') ? true : data.caseSensitive;
-        var charGap       = caseSensitive ? CHAR_GAP.toLowerCase() : CHAR_GAP;
-        var ret           = '';
-        var round         = (typeof data.round === 'undefined') ? true : data.round;
-        var value         = data.message || '';
-        var wordGap       = caseSensitive ? WORD_GAP.toLowerCase() : WORD_GAP;
+      value = prepare(value, new RegExp(wordGap, 'i'), new RegExp(charGap, 'i'));
 
-        value = prepare(value, new RegExp(wordGap, 'i'), new RegExp(charGap, 'i'));
+      // Ensure message was prepared successfully.
+      if (value) {
+        // Iterate over each word.
+        for (var i = 0; i < value.length; i++) {
+          // Insert space between each word.
+          if (i > 0) {
+            ret += ' ';
+          }
 
-        // Ensure message was prepared successfully.
-        if (value) {
-          // Iterate over each word.
-          for (var i = 0; i < value.length; i++) {
-            // Insert space between each word.
-            if (i > 0) {
-              ret += ' ';
-            }
+          // Iterate over each character of word.
+          for (var j = 0; j < value[i].length; j++) {
+            // Retrieve first matching character.
+            var ch = findChar(value[i][j], 1);
 
-            // Iterate over each character of word.
-            for (var j = 0; j < value[i].length; j++) {
-              // Retrieve first matching character.
-              var ch = findChar(value[i][j], 1);
-
-              // Check if character is supported.
-              if (ch && (!round || (ch[1] !== THOUSAND || j === value[i].length - 1))) {
-                ret += translate(value[i][j], ch[0], caseSensitive, alphabet);
-              }
+            // Check if character is supported.
+            if (ch && (!round || (ch[1] !== THOUSAND || j === value[i].length - 1))) {
+              ret += translate(value[i][j], ch[0], caseSensitive, alphabet);
             }
           }
         }
+      }
 
-        return ret;
-      }, callback, this);
+      return ret;
     },
 
     // Translate the message provided to the phonetic alphabet.
     // If no alphabet is specified then the default alphabet will be used.
-    // Optionally, a callback function can be provided which will be called with the result as the second argument. If
-    // an error occurs it will be passed as the first argument to this function, otherwise this argument will be
-    // `null`.
-    to: function(data, callback) {
-      callback = findLastFunction(data, callback);
+    to: function(data) {
+      switch (typeof data) {
+        case 'object': break;
+        case 'string':
+          data = {message: data};
+          break;
+        default:
+          data = {};
+          break;
+      }
 
-      return syncSafe(function() {
-        switch (typeof data) {
-          case 'object': break;
-          case 'string':
-            data = {message: data};
-            break;
-          default:
-            data = {};
-            break;
-        }
+      var alphabet      = getAlphabet(data.alphabet);
+      var caseSensitive = (typeof data.caseSensitive === 'undefined') ? true : data.caseSensitive;
+      var charGap       = caseSensitive ? CHAR_GAP.toLowerCase() : CHAR_GAP;
+      var omitSpace     = !!data.omitSpace;
+      var ret           = '';
+      var round         = (typeof data.round === 'undefined') ? true : data.round;
+      var value         = prepare(data.message || '', /\s+/, '');
+      var wordGap       = caseSensitive ? WORD_GAP.toLowerCase() : WORD_GAP;
 
-        var alphabet      = getAlphabet(data.alphabet);
-        var caseSensitive = (typeof data.caseSensitive === 'undefined') ? true : data.caseSensitive;
-        var charGap       = caseSensitive ? CHAR_GAP.toLowerCase() : CHAR_GAP;
-        var omitSpace     = !!data.omitSpace;
-        var ret           = '';
-        var round         = (typeof data.round === 'undefined') ? true : data.round;
-        var value         = prepare(data.message || '', /\s+/, '');
-        var wordGap       = caseSensitive ? WORD_GAP.toLowerCase() : WORD_GAP;
+      // Translate the word while providing special treatment for certain cases (e.g. decimal and/or round numbers).
+      var handleWord = function(word, ignoreSpecials) {
+        var ch, i, matches, str;
 
-        // Translate the word while providing special treatment for certain cases (e.g. decimal and/or round numbers).
-        var handleWord = function(word, ignoreSpecials) {
-          var ch, i, matches, str;
+        // Check for special cases.
+        if (!ignoreSpecials) {
+          matches = [];
+          str     = (typeof word === 'string') ? word : word.join('');
 
-          // Check for special cases.
-          if (!ignoreSpecials) {
-            matches = [];
-            str     = (typeof word === 'string') ? word : word.join('');
+          // Handle decimal numbers as expected. We wouldn't want "one stop zero" (i.e. kamikaze) now would we? We'd
+          // want "one point zero".
+          if (R_DECIMAL.test(str)) {
+            matches = str.match(R_DECIMAL);
 
-            // Handle decimal numbers as expected. We wouldn't want "one stop zero" (i.e. kamikaze) now would we? We'd
-            // want "one point zero".
-            if (R_DECIMAL.test(str)) {
-              matches = str.match(R_DECIMAL);
+            if (matches && matches.length === 3) {
+              handleWord(matches[1].replace(/,/g, ''), true);
 
-              if (matches && matches.length === 3) {
-                handleWord(matches[1].replace(/,/g, ''), true);
+              ret += charGap;
+              ret += translate('\u002E', findChar('\u002E', 0, 1)[1], caseSensitive, alphabet);
+              ret += charGap;
+
+              handleWord(matches[2], true);
+
+              return;
+            }
+          }
+
+          if (round) {
+            // Handle rounded hundreds, but only when exact (e.g. `100`, `900` but not `101` or `880`). Also, "zero
+            // hundred" wouldn't make any sense so it's ignored.
+            if (R_HUNDRED.test(str)) {
+              matches = str.match(R_HUNDRED);
+
+              if (matches && matches.length === 2) {
+                handleWord(matches[1], true);
 
                 ret += charGap;
-                ret += translate('\u002E', findChar('\u002E', 0, 1)[1], caseSensitive, alphabet);
-                ret += charGap;
-
-                handleWord(matches[2], true);
+                ret += translate(HUNDRED.toLowerCase(), HUNDRED, caseSensitive, alphabet);
 
                 return;
               }
             }
 
-            if (round) {
-              // Handle rounded hundreds, but only when exact (e.g. `100`, `900` but not `101` or `880`). Also, "zero
-              // hundred" wouldn't make any sense so it's ignored.
-              if (R_HUNDRED.test(str)) {
-                matches = str.match(R_HUNDRED);
+            // Handle rounded thousands, but millions can forget about it.
+            // Like hundreds, rounded thousands can't begin with zero, it just wouldn't make any sense.
+            // Comma-separated thousands are supported the comma position must be valid or it won't be rounded.
+            if (R_THOUSAND.test(str)) {
+              matches = str.match(R_THOUSAND);
 
-                if (matches && matches.length === 2) {
-                  handleWord(matches[1], true);
+              if (matches && matches.length === 3) {
+                handleWord(matches[1]);
 
-                  ret += charGap;
-                  ret += translate(HUNDRED.toLowerCase(), HUNDRED, caseSensitive, alphabet);
-
-                  return;
-                }
-              }
-
-              // Handle rounded thousands, but millions can forget about it.
-              // Like hundreds, rounded thousands can't begin with zero, it just wouldn't make any sense.
-              // Comma-separated thousands are supported the comma position must be valid or it won't be rounded.
-              if (R_THOUSAND.test(str)) {
-                matches = str.match(R_THOUSAND);
-
-                if (matches && matches.length === 3) {
-                  handleWord(matches[1]);
-
-                  ret += charGap;
-                  ret += translate(THOUSAND.toLowerCase(), THOUSAND, caseSensitive, alphabet);
-
-                  if (matches[2] !== '000') {
-                    ret += charGap;
-
-                    handleWord(matches[2]);
-                  }
-
-                  return;
-                }
-              }
-            }
-          }
-
-          // Iterate over each character of word.
-          for (i = 0; i < word.length; i++) {
-            // Retrieve first character matching the character.
-            ch = findChar(word[i], 0);
-
-            // Check if character is supported and translate it.
-            if (ch) {
-              // Insert character separator where appropriate.
-              if (i > 0) {
                 ret += charGap;
-              }
+                ret += translate(THOUSAND.toLowerCase(), THOUSAND, caseSensitive, alphabet);
 
-              ret += translate(word[i], ch[1], caseSensitive, alphabet);
-            }
-          }
-        };
+                if (matches[2] !== '000') {
+                  ret += charGap;
 
-        // Ensure message was prepared successfully.
-        if (value) {
-          // Iterate over each word grouping.
-          for (var i = 0; i < value.length; i++) {
-            // Insert word-grouping separator where appropriate.
-            if (i > 0) {
-              ret += charGap;
+                  handleWord(matches[2]);
+                }
 
-              if (!omitSpace) {
-                ret += wordGap + charGap;
+                return;
               }
             }
-
-            handleWord(value[i]);
           }
         }
 
-        return ret;
-      }, callback, this);
+        // Iterate over each character of word.
+        for (i = 0; i < word.length; i++) {
+          // Retrieve first character matching the character.
+          ch = findChar(word[i], 0);
+
+          // Check if character is supported and translate it.
+          if (ch) {
+            // Insert character separator where appropriate.
+            if (i > 0) {
+              ret += charGap;
+            }
+
+            ret += translate(word[i], ch[1], caseSensitive, alphabet);
+          }
+        }
+      };
+
+      // Ensure message was prepared successfully.
+      if (value) {
+        // Iterate over each word grouping.
+        for (var i = 0; i < value.length; i++) {
+          // Insert word-grouping separator where appropriate.
+          if (i > 0) {
+            ret += charGap;
+
+            if (!omitSpace) {
+              ret += wordGap + charGap;
+            }
+          }
+
+          handleWord(value[i]);
+        }
+      }
+
+      return ret;
     },
 
     // Customization functions
@@ -491,47 +440,43 @@
     // * ANSI
     //
     // Use `null` to fill the gaps and feel free to leave off any unused alphabet translations from the end.
-    // Optionally, a callback function can be provided which will be called when the character has been defined. If an
-    // error occurs it will be passed as the first argument to this function, otherwise this argument will be `null`.
-    defineChar: function(character, translation, callback) {
-      return syncSafe(function() {
-        // Type-check arguments provided.
-        if (typeof character !== 'string') {
-          throw new TypeError('Invalid character type: ' + typeof character);
-        } else if (typeof translation !== 'string' || (typeof translation !== 'object' ||
-            typeof translation.length !== 'number')) {
-          throw new TypeError('Invalid translation type: ' + typeof translation);
-        }
+    defineChar: function(character, translation) {
+      // Type-check arguments provided.
+      if (typeof character !== 'string') {
+        throw new TypeError('Invalid character type: ' + typeof character);
+      } else if (typeof translation !== 'string' || (typeof translation !== 'object' ||
+          typeof translation.length !== 'number')) {
+        throw new TypeError('Invalid translation type: ' + typeof translation);
+      }
 
-        // `character` must be singular.
-        if (character.length > 1) {
-          throw new Error('Invalid character length: ' + character.length);
-        }
+      // `character` must be singular.
+      if (character.length > 1) {
+        throw new Error('Invalid character length: ' + character.length);
+      }
 
-        // `translation` must be single word or contain only single words.
-        if (typeof translation === 'string') {
-          translation = validateTranslation(translation);
-        } else {
-          for (var i = 0; i < translation.length; i++) {
-            translation[i] = validateTranslation(translation[i], true);
+      // `translation` must be single word or contain only single words.
+      if (typeof translation === 'string') {
+        translation = validateTranslation(translation);
+      } else {
+        for (var i = 0; i < translation.length; i++) {
+          translation[i] = validateTranslation(translation[i], true);
 
-            if (i === 0 && !translation[i]) {
-              throw new Error('Invalid default translation: ' + translation[i]);
-            }
+          if (i === 0 && !translation[i]) {
+            throw new Error('Invalid default translation: ' + translation[i]);
           }
         }
+      }
 
-        // Update existing character mapping or create new one.
-        character = character.toLowerUpperCase();
+      // Update existing character mapping or create new one.
+      character = character.toLowerUpperCase();
 
-        var existingChar = findChar(character, 0);
+      var existingChar = findChar(character, 0);
 
-        if (existingChar) {
-          existingChar[1] = translation;
-        } else {
-          chars.push([character, translation]);
-        }
-      }, callback, this);
+      if (existingChar) {
+        existingChar[1] = translation;
+      } else {
+        chars.push([character, translation]);
+      }
     },
 
     // Utility functions
@@ -539,14 +484,10 @@
 
     // Run phony.js in *noConflict* mode, returning the `phony` variable to its previous owner.
     // Returns a reference to `phony`.
-    // Optionally, a callback function can be provided which will be called after the ownership has been restored. If
-    // an error occurs it will be passed as the first argument to this function, otherwise this argument will be
-    // `null`.
-    noConflict: function(callback) {
-      return syncSafe(function() {
-        root.phony = previousPhony;
-        return this;
-      }, callback, this);
+    noConflict: function() {
+      root.phony = previousPhony;
+
+      return this;
     }
 
   };
