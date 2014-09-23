@@ -335,7 +335,7 @@
 
     exports.phony = phony;
   } else if (typeof define === 'function' && define.amd) {
-    define('phony', function() {
+    define(function() {
       return phony;
     });
   } else {
