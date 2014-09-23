@@ -1,4 +1,4 @@
-// [phony.js](http://neocotic.com/phony.js) 1.0.1
+// [phony.js](http://neocotic.com/phony.js) 1.1.0
 //
 // (c) 2014 Alasdair Mercer
 //
@@ -215,7 +215,7 @@
     // ---------
 
     // Current version of `phony`.
-    VERSION: '1.0.1',
+    VERSION: '1.1.0',
 
     // Variables
     // ---------

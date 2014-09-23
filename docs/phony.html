@@ -1,600 +1,897 @@
-<!DOCTYPE html>  <html> <head>   <title>phony.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               phony.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><a href="http://neocotic.com/phony.js">phony.js</a> 1.0.1 <br />
-(c) 2011 Alasdair Mercer <br />
-Freely distributable under the MIT license. <br />
-For all details and documentation: <br />
-<a href="http://neocotic.com/phony.js">http://neocotic.com/phony.js</a></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Private constants</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-  <span class="kd">var</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Indices used to map phonetic alphabets to supported characters.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">ALPHABETS</span>        <span class="o">=</span> <span class="p">{</span> <span class="nx">ANSI</span> <span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">FAA</span>  <span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">ICAO</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">ITU</span>  <span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Separator inserted between phonetic representations.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">CHAR_GAP</span>         <span class="o">=</span> <span class="s1">&#39;\u0020&#39;</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Default alphabet used if not specified or found is International
-Telecommunication Union (ITU).</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">DEFAULT_ALPHABET</span> <span class="o">=</span> <span class="s1">&#39;ITU&#39;</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Easy access to the rounded representation of a number in the hundreds.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">HUNDRED</span>          <span class="o">=</span> <span class="s1">&#39;Hundred&#39;</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Regular expression used to match decimal numbers. <br />
-If a decimal number is found rounding should not be performed.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">R_DECIMAL</span>        <span class="o">=</span> <span class="sr">/([\d,]+)\.(\d+)$/</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Regular expression used to match numbers in their hundreds for
-rounding.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">R_HUNDRED</span>        <span class="o">=</span> <span class="sr">/^([1-9])0{2}$/</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Regular expression used to match numbers in their thousands for
-rounding.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">R_THOUSAND</span>       <span class="o">=</span> <span class="sr">/^([1-9]\d{0,2}),?(\d{3})$/</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Easy access to the rounded representation of a number in the
-thousands.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">THOUSAND</span>         <span class="o">=</span> <span class="s1">&#39;Thousand&#39;</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Separator inserted between a grouping of phonetic representations that
-form a word.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">WORD_GAP</span>         <span class="o">=</span> <span class="s1">&#39;Space&#39;</span><span class="p">;</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h2>Private variables</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-  <span class="kd">var</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Map of supported characters to their phonetic alphabet counterparts. <br />
-This is a multi-dimensional array and should be treated as such.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">chars</span>         <span class="o">=</span> <span class="p">[</span>
-    <span class="cm">/* Char(s)  | ITU         | ICAO   | FAA    | ANSI                     */</span>
-    <span class="cm">/* Letters                                                             */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0041&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Alfa&#39;</span><span class="p">,</span>       <span class="kc">null</span><span class="p">,</span>    <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Alpha&#39;</span> <span class="p">]],</span> <span class="cm">/* A         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0042&#39;</span><span class="p">,</span>  <span class="s1">&#39;Bravo&#39;</span>                                  <span class="p">],</span> <span class="cm">/* B         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0043&#39;</span><span class="p">,</span>  <span class="s1">&#39;Charlie&#39;</span>                                <span class="p">],</span> <span class="cm">/* C         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0044&#39;</span><span class="p">,</span>  <span class="s1">&#39;Delta&#39;</span>                                  <span class="p">],</span> <span class="cm">/* D         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0045&#39;</span><span class="p">,</span>  <span class="s1">&#39;Echo&#39;</span>                                   <span class="p">],</span> <span class="cm">/* E         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0046&#39;</span><span class="p">,</span>  <span class="s1">&#39;Foxtrot&#39;</span>                                <span class="p">],</span> <span class="cm">/* F         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0047&#39;</span><span class="p">,</span>  <span class="s1">&#39;Golf&#39;</span>                                   <span class="p">],</span> <span class="cm">/* G         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0048&#39;</span><span class="p">,</span>  <span class="s1">&#39;Hotel&#39;</span>                                  <span class="p">],</span> <span class="cm">/* H         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0049&#39;</span><span class="p">,</span>  <span class="s1">&#39;India&#39;</span>                                  <span class="p">],</span> <span class="cm">/* I         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u004A&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Juliett&#39;</span><span class="p">,</span>    <span class="kc">null</span><span class="p">,</span>    <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Juliet&#39;</span><span class="p">]],</span> <span class="cm">/* J         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u004B&#39;</span><span class="p">,</span>  <span class="s1">&#39;Kilo&#39;</span>                                   <span class="p">],</span> <span class="cm">/* K         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u004C&#39;</span><span class="p">,</span>  <span class="s1">&#39;Lima&#39;</span>                                   <span class="p">],</span> <span class="cm">/* L         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u004D&#39;</span><span class="p">,</span>  <span class="s1">&#39;Mike&#39;</span>                                   <span class="p">],</span> <span class="cm">/* M         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u004E&#39;</span><span class="p">,</span>  <span class="s1">&#39;November&#39;</span>                               <span class="p">],</span> <span class="cm">/* N         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u004F&#39;</span><span class="p">,</span>  <span class="s1">&#39;Oscar&#39;</span>                                  <span class="p">],</span> <span class="cm">/* O         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0050&#39;</span><span class="p">,</span>  <span class="s1">&#39;Papa&#39;</span>                                   <span class="p">],</span> <span class="cm">/* P         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0051&#39;</span><span class="p">,</span>  <span class="s1">&#39;Quebec&#39;</span>                                 <span class="p">],</span> <span class="cm">/* Q         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0052&#39;</span><span class="p">,</span>  <span class="s1">&#39;Romeo&#39;</span>                                  <span class="p">],</span> <span class="cm">/* R         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0053&#39;</span><span class="p">,</span>  <span class="s1">&#39;Sierra&#39;</span>                                 <span class="p">],</span> <span class="cm">/* S         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0054&#39;</span><span class="p">,</span>  <span class="s1">&#39;Tango&#39;</span>                                  <span class="p">],</span> <span class="cm">/* T         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0055&#39;</span><span class="p">,</span>  <span class="s1">&#39;Uniform&#39;</span>                                <span class="p">],</span> <span class="cm">/* U         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0056&#39;</span><span class="p">,</span>  <span class="s1">&#39;Victor&#39;</span>                                 <span class="p">],</span> <span class="cm">/* V         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0057&#39;</span><span class="p">,</span>  <span class="s1">&#39;Whiskey&#39;</span>                                <span class="p">],</span> <span class="cm">/* W         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0058&#39;</span><span class="p">,</span>  <span class="s1">&#39;X-ray&#39;</span>                                  <span class="p">],</span> <span class="cm">/* X         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0059&#39;</span><span class="p">,</span>  <span class="s1">&#39;Yankee&#39;</span>                                 <span class="p">],</span> <span class="cm">/* Y         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u005A&#39;</span><span class="p">,</span>  <span class="s1">&#39;Zulu&#39;</span>                                   <span class="p">],</span> <span class="cm">/* Z         */</span>
-    <span class="cm">/* Numbers                                                             */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0030&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Nadazero&#39;</span><span class="p">,</span>   <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Zero&#39;</span>           <span class="p">]],</span> <span class="cm">/* 0         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0031&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Unaone&#39;</span><span class="p">,</span>     <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;One&#39;</span>            <span class="p">]],</span> <span class="cm">/* 1         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0032&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Bissotwo&#39;</span><span class="p">,</span>   <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Two&#39;</span>            <span class="p">]],</span> <span class="cm">/* 2         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0033&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Terrathree&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Three&#39;</span>          <span class="p">]],</span> <span class="cm">/* 3         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0034&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Kartefour&#39;</span><span class="p">,</span>  <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Four&#39;</span>           <span class="p">]],</span> <span class="cm">/* 4         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0035&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Pantafive&#39;</span><span class="p">,</span>  <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Five&#39;</span>           <span class="p">]],</span> <span class="cm">/* 5         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0036&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Soxisix&#39;</span><span class="p">,</span>    <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Six&#39;</span>            <span class="p">]],</span> <span class="cm">/* 6         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0037&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Setteseven&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Seven&#39;</span>          <span class="p">]],</span> <span class="cm">/* 7         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0038&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Oktoeight&#39;</span><span class="p">,</span>  <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Eight&#39;</span>          <span class="p">]],</span> <span class="cm">/* 8         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0039&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Novenine&#39;</span><span class="p">,</span>   <span class="s1">&#39;Niner&#39;</span><span class="p">,</span> <span class="s1">&#39;Nine&#39;</span>           <span class="p">]],</span> <span class="cm">/* 9         */</span>
-    <span class="cm">/* Rounding                                                            */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0030&#39;</span><span class="o">+</span>
-       <span class="s1">&#39;\u0030&#39;</span><span class="p">,</span>  <span class="s1">&#39;Hundred&#39;</span>                                <span class="p">],</span> <span class="cm">/* 00        */</span>
-      <span class="p">[</span><span class="s1">&#39;\u0030&#39;</span><span class="o">+</span>
-       <span class="s1">&#39;\u0030&#39;</span><span class="o">+</span>
-       <span class="s1">&#39;\u0030&#39;</span><span class="p">,</span>  <span class="s1">&#39;Thousand&#39;</span>                               <span class="p">],</span> <span class="cm">/* 000       */</span>
-    <span class="cm">/* Punctuation                                                         */</span>
-      <span class="p">[</span><span class="s1">&#39;\u002E&#39;</span><span class="p">,</span>  <span class="s1">&#39;Stop&#39;</span>                                   <span class="p">],</span> <span class="cm">/* Full stop */</span>
-      <span class="p">[</span><span class="s1">&#39;\u002E&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Decimal&#39;</span><span class="p">,</span>    <span class="kc">null</span><span class="p">,</span>    <span class="s1">&#39;Point&#39;</span>          <span class="p">]],</span> <span class="cm">/* Full stop */</span>
-      <span class="p">[</span><span class="s1">&#39;\u002D&#39;</span><span class="p">,</span>  <span class="s1">&#39;Dash&#39;</span>                                   <span class="p">]</span>  <span class="cm">/* Hyphen    */</span>
-    <span class="p">],</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Save the previous value of the <code>phony</code> variable.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">previousPhony</span> <span class="o">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">phony</span><span class="p">;</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Private functions</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Determine the case of a string through comparison. <br />
-Possible return values:</p>
-
-<ul>
-<li><code>-1</code> - Lower case</li>
-<li><code>0</code> - N/A (use title case)</li>
-<li><code>1</code> - Upper case</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">compareCase</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">switch</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="nx">str</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span><span class="o">:</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-    <span class="k">case</span> <span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="o">:</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="k">default</span>               <span class="o">:</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>Return the index of the specified alphabet. <br />
-If no alphabet is specified, or no matching alphabet could be found, the
-index of <code>DEFAULT_ALPHABET</code> will be returned.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">findAlphabet</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p><code>name</code> is case-insensitive.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-      <span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
-      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">ALPHABETS</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;number&#39;</span><span class="p">)</span> <span class="k">return</span> <span class="nx">ALPHABETS</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nx">ALPHABETS</span><span class="p">[</span><span class="nx">DEFAULT_ALPHABET</span><span class="p">];</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Return the character mapping that matches the query provided.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">findChar</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">ignores</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Setup the the number of results to be ignored before a match should be
-returned.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="kd">var</span> <span class="nx">ignored</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">ignores</span> <span class="o">!==</span> <span class="s1">&#39;number&#39;</span> <span class="o">||</span> <span class="nx">ignores</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">ignores</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p><code>query</code> is case-insensitive.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">query</span> <span class="o">=</span> <span class="nx">query</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">chars</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>If element is string simply compare against query.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">].</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">===</span> <span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p>Return if ignored necessary matches; otherwise skip.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-          <span class="k">if</span> <span class="p">(</span><span class="nx">ignored</span> <span class="o">&gt;=</span> <span class="nx">ignores</span><span class="p">)</span> <span class="k">return</span> <span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-          <span class="nx">ignored</span><span class="o">++</span><span class="p">;</span>
-        <span class="p">}</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <p>If element is array compare query against all elements.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">].</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">if</span> <span class="p">(</span><span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">][</span><span class="nx">j</span><span class="p">]</span> <span class="o">&amp;&amp;</span>
-              <span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">index</span><span class="p">][</span><span class="nx">j</span><span class="p">].</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">===</span> <span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>Return if ignored necessary matches; otherwise skip.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">ignored</span> <span class="o">&gt;=</span> <span class="nx">ignores</span><span class="p">)</span> <span class="k">return</span> <span class="nx">chars</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-            <span class="nx">ignored</span><span class="o">++</span><span class="p">;</span>
-            <span class="k">break</span><span class="p">;</span>
-          <span class="p">}</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <p>Return the <strong>last</strong> function in the arguments provided, where possible.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">findLastFunction</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="o">--</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="k">return</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>Prepare the string to simplify translation. <br />
-The return value is a multi-dimensional array and should be treated as
-such.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">prepare</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">wordSplitter</span><span class="p">,</span> <span class="nx">letterSplitter</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">str</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid value type: &#39;</span> <span class="o">+</span> <span class="k">typeof</span> <span class="nx">str</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">trim</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="nx">wordSplitter</span><span class="p">);</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">ret</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">ret</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="nx">letterSplitter</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <p>Safely handle cases where synchronization methodology may vary. <br />
-In cases where a callback function was specified it should be used to pass
-the return value of the function provided or any errors that were thrown
-during the process. Either the return value of the callback function or
-the error encountered will be returned here. <br />
-Otherwise; errors will be thrown as normal and the return value of the
-function will simply be returned. <br />
-When the function provided is called the specified context will be
-applied.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">syncSafe</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">cb</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">try</span> <span class="p">{</span>
-      <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">ctx</span> <span class="o">||</span> <span class="k">this</span><span class="p">);</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <p>All went OK, so handle result.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">cb</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">ret</span><span class="p">);</span>
-      <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>Something went wrong, so bubble the error.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-      <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">cb</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
-      <span class="k">throw</span> <span class="nx">e</span><span class="p">;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Transform a string in to title case.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">toTitleCase</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">str</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="nx">str</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">();</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <p>Translate a matched string to/from the phonetic alphabet. <br />
-If a specific alphabet is provided an attempt will be made to use its
-variation but will fall back on the default representation if not found.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">translate</span><span class="p">(</span><span class="nx">original</span><span class="p">,</span> <span class="nx">matched</span><span class="p">,</span> <span class="nx">caseSensitive</span><span class="p">,</span> <span class="nx">alphabet</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <p>Single translation found so just check case and return it.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">matched</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">caseSensitive</span> <span class="o">&amp;&amp;</span> <span class="nx">compareCase</span><span class="p">(</span><span class="nx">original</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">matched</span> <span class="o">=</span> <span class="nx">matched</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
-      <span class="p">}</span>
-      <span class="k">return</span> <span class="nx">matched</span><span class="p">;</span>
-    <span class="p">}</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <p>Multiple translations found so determine best match and use that.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="p">(</span><span class="nx">matched</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="nx">alphabet</span><span class="p">)</span> <span class="o">?</span> <span class="nx">matched</span><span class="p">[</span><span class="nx">alphabet</span><span class="p">]</span> <span class="o">:</span> <span class="nx">matched</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-        <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span> <span class="o">||</span> <span class="nx">matched</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-    <span class="k">return</span> <span class="nx">translate</span><span class="p">(</span><span class="nx">original</span><span class="p">,</span> <span class="nx">str</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nx">caseSensitive</span><span class="p">);</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <p>Validate a translation included in a user-defined character mapping. <br />
-The return value will be the normalised version of the translation and any
-problems with the validation will be thrown as errors.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">function</span> <span class="nx">validateTranslation</span><span class="p">(</span><span class="nx">translation</span><span class="p">,</span> <span class="nx">nullCheck</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <p><code>translation</code> can only be a single word string.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">translation</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">translation</span> <span class="o">=</span> <span class="nx">toTitleCase</span><span class="p">(</span><span class="nx">translation</span><span class="p">.</span><span class="nx">trim</span><span class="p">());</span>
-      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">translation</span> <span class="o">||</span> <span class="o">!</span><span class="sr">/\s+/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">translation</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Invalid translation: &#39;</span> <span class="o">+</span> <span class="nx">translation</span><span class="p">);</span>
-      <span class="p">}</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">nullCheck</span> <span class="o">&amp;&amp;</span> <span class="nx">translation</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid translation: &#39;</span> <span class="o">+</span> <span class="nx">translation</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nx">translation</span><span class="p">;</span>
-  <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h2>Phony setup</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <p>Build the publicly exposed API.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="kd">var</span> <span class="nx">phony</span> <span class="o">=</span> <span class="p">{</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <h2>Constants</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <p>Acronyms of the supported phonetic alphabets.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">ALPHABETS</span><span class="o">:</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-      <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span>
-      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="nx">ALPHABETS</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">ALPHABETS</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">prop</span><span class="p">))</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">prop</span><span class="p">);</span>
-      <span class="p">}</span>
-      <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-    <span class="p">}()),</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-41">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>               <p>Current version of <code>phony</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">VERSION</span><span class="o">:</span> <span class="s1">&#39;1.0.1&#39;</span><span class="p">,</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-42">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>               <h2>Translation functions</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-43">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>               <p>Translate the message from the phonetic alphabet. <br />
-No specific alphabet is required by this function as it will search all
-possible translations for a match. <br />
-Optionally, a callback function can be provided which will be called
-with the result as the second argument. If an error occurs it will be
-passed as the first argument to this function, otherwise this argument
-will be <code>null</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">from</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">callback</span> <span class="o">=</span> <span class="nx">findLastFunction</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-      <span class="k">return</span> <span class="nx">syncSafe</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-        <span class="k">switch</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">case</span> <span class="s1">&#39;object&#39;</span><span class="o">:</span> <span class="k">break</span><span class="p">;</span>
-        <span class="k">case</span> <span class="s1">&#39;string&#39;</span><span class="o">:</span>
-          <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span><span class="nx">message</span><span class="o">:</span> <span class="nx">data</span><span class="p">};</span>
-          <span class="k">break</span><span class="p">;</span>
-        <span class="k">default</span><span class="o">:</span>
-          <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
-          <span class="k">break</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="kd">var</span>
-          <span class="nx">alphabet</span>      <span class="o">=</span> <span class="nx">findAlphabet</span><span class="p">(),</span>
-          <span class="nx">caseSensitive</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span><span class="p">.</span><span class="nx">caseSensitive</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span>
-                              <span class="nx">data</span><span class="p">.</span><span class="nx">caseSensitive</span><span class="p">,</span>
-          <span class="nx">charGap</span>       <span class="o">=</span> <span class="nx">caseSensitive</span> <span class="o">?</span> <span class="nx">CHAR_GAP</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">:</span> <span class="nx">CHAR_GAP</span><span class="p">,</span>
-          <span class="nx">ret</span>           <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-          <span class="nx">round</span>         <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span><span class="p">.</span><span class="nx">round</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span>
-                              <span class="nx">data</span><span class="p">.</span><span class="nx">round</span><span class="p">,</span>
-          <span class="nx">value</span>         <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">message</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-          <span class="nx">wordGap</span>       <span class="o">=</span> <span class="nx">caseSensitive</span> <span class="o">?</span> <span class="nx">WORD_GAP</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">:</span> <span class="nx">WORD_GAP</span><span class="p">;</span>
-        <span class="nx">value</span> <span class="o">=</span> <span class="nx">prepare</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">wordGap</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">),</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">charGap</span><span class="p">,</span>
-            <span class="s1">&#39;i&#39;</span><span class="p">));</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-44">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-44">&#182;</a>               </div>               <p>Ensure message was prepared successfully.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-45">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-45">&#182;</a>               </div>               <p>Iterate over each word.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">value</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-46">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-46">&#182;</a>               </div>               <p>Insert space between each word.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">ret</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-47">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-47">&#182;</a>               </div>               <p>Iterate over each character of word.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-48">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-48">&#182;</a>               </div>               <p>Retrieve first matching character.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-              <span class="kd">var</span> <span class="nx">ch</span> <span class="o">=</span> <span class="nx">findChar</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">],</span> <span class="mi">1</span><span class="p">);</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-49">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-49">&#182;</a>               </div>               <p>Check if character is supported.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-              <span class="k">if</span> <span class="p">(</span><span class="nx">ch</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">round</span> <span class="o">||</span>
-                   <span class="p">(</span><span class="nx">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">THOUSAND</span> <span class="o">||</span> <span class="nx">j</span> <span class="o">===</span> <span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
-                  <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">translate</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">],</span> <span class="nx">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">caseSensitive</span><span class="p">,</span>
-                      <span class="nx">alphabet</span><span class="p">);</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-            <span class="p">}</span>
-          <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-      <span class="p">},</span> <span class="nx">callback</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-    <span class="p">},</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-50">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-50">&#182;</a>               </div>               <p>Translate the message provided to the phonetic alphabet. <br />
-If no alphabet is specified then the default alphabet will be used. <br />
-Optionally, a callback function can be provided which will be called
-with the result as the second argument. If an error occurs it will be
-passed as the first argument to this function, otherwise this argument
-will be <code>null</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">to</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">callback</span> <span class="o">=</span> <span class="nx">findLastFunction</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-      <span class="k">return</span> <span class="nx">syncSafe</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-        <span class="k">switch</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">case</span> <span class="s1">&#39;object&#39;</span><span class="o">:</span> <span class="k">break</span><span class="p">;</span>
-        <span class="k">case</span> <span class="s1">&#39;string&#39;</span><span class="o">:</span>
-          <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span><span class="nx">message</span><span class="o">:</span> <span class="nx">data</span><span class="p">};</span>
-          <span class="k">break</span><span class="p">;</span>
-        <span class="k">default</span><span class="o">:</span>
-          <span class="nx">data</span> <span class="o">=</span> <span class="p">{};</span>
-          <span class="k">break</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="kd">var</span>
-          <span class="nx">alphabet</span>      <span class="o">=</span> <span class="nx">findAlphabet</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">alphabet</span><span class="p">),</span>
-          <span class="nx">caseSensitive</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span><span class="p">.</span><span class="nx">caseSensitive</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span>
-                              <span class="nx">data</span><span class="p">.</span><span class="nx">caseSensitive</span><span class="p">,</span>
-          <span class="nx">charGap</span>       <span class="o">=</span> <span class="nx">caseSensitive</span> <span class="o">?</span> <span class="nx">CHAR_GAP</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">:</span> <span class="nx">CHAR_GAP</span><span class="p">,</span>
-          <span class="nx">omitSpace</span>     <span class="o">=</span> <span class="o">!!</span><span class="nx">data</span><span class="p">.</span><span class="nx">omitSpace</span><span class="p">,</span>
-          <span class="nx">ret</span>           <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-          <span class="nx">round</span>         <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">data</span><span class="p">.</span><span class="nx">round</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span>
-                              <span class="nx">data</span><span class="p">.</span><span class="nx">round</span><span class="p">,</span>
-          <span class="nx">value</span>         <span class="o">=</span> <span class="nx">prepare</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">message</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sr">/\s+/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-          <span class="nx">wordGap</span>       <span class="o">=</span> <span class="nx">caseSensitive</span> <span class="o">?</span> <span class="nx">WORD_GAP</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">:</span> <span class="nx">WORD_GAP</span><span class="p">;</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-51">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-51">&#182;</a>               </div>               <p>Translate the word while providing special treatment for certain
-cases (e.g. decimal and/or round numbers).</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="kd">function</span> <span class="nx">handleWord</span><span class="p">(</span><span class="nx">word</span><span class="p">,</span> <span class="nx">ignoreSpecials</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-52">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-52">&#182;</a>               </div>               <p>Check for special cases.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ignoreSpecials</span><span class="p">)</span> <span class="p">{</span>
-            <span class="kd">var</span>
-              <span class="nx">matches</span> <span class="o">=</span> <span class="p">[],</span>
-              <span class="nx">str</span>     <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">word</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="o">?</span> <span class="nx">word</span> <span class="o">:</span> <span class="nx">word</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-53">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-53">&#182;</a>               </div>               <p>Handle decimal numbers as expected. We wouldn't want "one stop
-zero" (i.e. kamikaze) now would we? We'd want "one point zero".</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">R_DECIMAL</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">str</span><span class="p">))</span> <span class="p">{</span>
-              <span class="nx">matches</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">R_DECIMAL</span><span class="p">);</span>
-              <span class="k">if</span> <span class="p">(</span><span class="nx">matches</span> <span class="o">&amp;&amp;</span> <span class="nx">matches</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
-                <span class="nx">handleWord</span><span class="p">(</span><span class="nx">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/,/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="kc">true</span><span class="p">);</span>
-                <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-                <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">translate</span><span class="p">(</span><span class="s1">&#39;\u002E&#39;</span><span class="p">,</span> <span class="nx">findChar</span><span class="p">(</span><span class="s1">&#39;\u002E&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="nx">caseSensitive</span><span class="p">,</span> <span class="nx">alphabet</span><span class="p">);</span>
-                <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-                <span class="nx">handleWord</span><span class="p">(</span><span class="nx">matches</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kc">true</span><span class="p">);</span>
-                <span class="k">return</span><span class="p">;</span>
-              <span class="p">}</span>
-            <span class="p">}</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">round</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-54">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-54">&#182;</a>               </div>               <p>Handle rounded hundreds, but only when exact (e.g. <code>100</code>,
-<code>900</code> but not <code>101</code> or <code>880</code>). Also, "zero hundred" wouldn't
-make any sense so it's ignored.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-              <span class="k">if</span> <span class="p">(</span><span class="nx">R_HUNDRED</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">str</span><span class="p">))</span> <span class="p">{</span>
-                <span class="nx">matches</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">R_HUNDRED</span><span class="p">);</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">matches</span> <span class="o">&amp;&amp;</span> <span class="nx">matches</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="nx">handleWord</span><span class="p">(</span><span class="nx">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">true</span><span class="p">);</span>
-                  <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-                  <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">translate</span><span class="p">(</span><span class="nx">HUNDRED</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span> <span class="nx">HUNDRED</span><span class="p">,</span>
-                      <span class="nx">caseSensitive</span><span class="p">,</span> <span class="nx">alphabet</span><span class="p">);</span>
-                  <span class="k">return</span><span class="p">;</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-55">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-55">&#182;</a>               </div>               <p>Handle rounded thousands, but millions can forget about it.
-Like hundreds, rounded thousands can't begin with zero, it
-just wouldn't make any sense. <br />
-Comma-separated thousands are supported the comma position
-must be valid or it won't be rounded.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-              <span class="k">if</span> <span class="p">(</span><span class="nx">R_THOUSAND</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">str</span><span class="p">))</span> <span class="p">{</span>
-                <span class="nx">matches</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">R_THOUSAND</span><span class="p">);</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">matches</span> <span class="o">&amp;&amp;</span> <span class="nx">matches</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="nx">handleWord</span><span class="p">(</span><span class="nx">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-                  <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-                  <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">translate</span><span class="p">(</span><span class="nx">THOUSAND</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span> <span class="nx">THOUSAND</span><span class="p">,</span>
-                      <span class="nx">caseSensitive</span><span class="p">,</span> <span class="nx">alphabet</span><span class="p">);</span>
-                  <span class="k">if</span> <span class="p">(</span><span class="nx">matches</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">&#39;000&#39;</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-                    <span class="nx">handleWord</span><span class="p">(</span><span class="nx">matches</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
-                  <span class="p">}</span>
-                  <span class="k">return</span><span class="p">;</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-            <span class="p">}</span>
-          <span class="p">}</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-56">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-56">&#182;</a>               </div>               <p>Iterate over each character of word.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-57">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-57">&#182;</a>               </div>               <p>Retrieve first character matching the character.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="kd">var</span> <span class="nx">ch</span> <span class="o">=</span> <span class="nx">findChar</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="mi">0</span><span class="p">);</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-58">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-58">&#182;</a>               </div>               <p>Check if character is supported and translate it.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">ch</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-59">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-59">&#182;</a>               </div>               <p>Insert character separator where appropriate.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-              <span class="k">if</span> <span class="p">(</span><span class="nx">j</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-              <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">translate</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">caseSensitive</span><span class="p">,</span> <span class="nx">alphabet</span><span class="p">);</span>
-            <span class="p">}</span>
-          <span class="p">}</span>
-        <span class="p">}</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-60">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-60">&#182;</a>               </div>               <p>Ensure message was prepared successfully.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-61">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-61">&#182;</a>               </div>               <p>Iterate over each word grouping.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">value</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-62">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-62">&#182;</a>               </div>               <p>Insert word-grouping separator where appropriate.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-              <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">charGap</span><span class="p">;</span>
-              <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">omitSpace</span><span class="p">)</span> <span class="nx">ret</span> <span class="o">+=</span> <span class="nx">wordGap</span> <span class="o">+</span> <span class="nx">charGap</span><span class="p">;</span>
-            <span class="p">}</span>
-            <span class="nx">handleWord</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
-          <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-      <span class="p">},</span> <span class="nx">callback</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-    <span class="p">},</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-63">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-63">&#182;</a>               </div>               <h2>Customization functions</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-64">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-64">&#182;</a>               </div>               <p>Map a new translation to the character provided. <br />
-If a mapping already exists for the specified character, that mapping
-will be modified. <br />
-If <code>translation</code> is an array, its elements should be specified in the
-following order;</p>
-
-<ul>
-<li>ITU</li>
-<li>ICAO</li>
-<li>FAA</li>
-<li>ANSI</li>
-</ul>
-
-<p>Use <code>null</code> to fill the gaps and feel free to leave off any unused
-alphabet translations from the end. <br />
-Optionally, a callback function can be provided which will be called
-when the character has been defined. If an error occurs it will be
-passed as the first argument to this function, otherwise this argument
-will be <code>null</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">defineChar</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">character</span><span class="p">,</span> <span class="nx">translation</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">syncSafe</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-65">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-65">&#182;</a>               </div>               <p>Type-check arguments provided.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">character</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid character type: &#39;</span> <span class="o">+</span> <span class="k">typeof</span> <span class="nx">character</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">translation</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span> <span class="o">||</span>
-                  <span class="p">(</span><span class="k">typeof</span> <span class="nx">translation</span> <span class="o">!==</span> <span class="s1">&#39;object&#39;</span> <span class="o">||</span>
-                          <span class="k">typeof</span> <span class="nx">translation</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="s1">&#39;number&#39;</span><span class="p">))</span> <span class="p">{</span>
-          <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid translation type: &#39;</span> <span class="o">+</span>
-              <span class="k">typeof</span> <span class="nx">translation</span><span class="p">);</span>
-        <span class="p">}</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-66">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-66">&#182;</a>               </div>               <p><code>character</code> must be singular.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">character</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Invalid character length: &#39;</span> <span class="o">+</span> <span class="nx">character</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
-        <span class="p">}</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-67">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-67">&#182;</a>               </div>               <p><code>translation</code> must be single word or contain only single words.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">translation</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">translation</span> <span class="o">=</span> <span class="nx">validateTranslation</span><span class="p">(</span><span class="nx">translation</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">translation</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">translation</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">validateTranslation</span><span class="p">(</span><span class="nx">translation</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="kc">true</span><span class="p">);</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">translation</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
-              <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Invalid default translation: &#39;</span> <span class="o">+</span> <span class="nx">transation</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
-            <span class="p">}</span>
-          <span class="p">}</span>
-        <span class="p">}</span>
-
-</pre></div>             </td>           </tr>                               <tr id="section-68">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-68">&#182;</a>               </div>               <p>Update existing character mapping or create new one.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-        <span class="nx">character</span> <span class="o">=</span> <span class="nx">character</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
-        <span class="kd">var</span> <span class="nx">existingChar</span> <span class="o">=</span> <span class="nx">findChar</span><span class="p">(</span><span class="nx">character</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">existingChar</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">existingChar</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">translation</span><span class="p">;</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-          <span class="nx">chars</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">character</span><span class="p">,</span> <span class="nx">translation</span><span class="p">]);</span>
-        <span class="p">}</span>
-      <span class="p">},</span> <span class="nx">callback</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-    <span class="p">},</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-69">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-69">&#182;</a>               </div>               <h2>Utility functions</h2>             </td>             <td class="code">               <div class="highlight"><pre>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-70">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-70">&#182;</a>               </div>               <p>Run phony.js in <em>noConflict</em> mode, returning the <code>phony</code> variable to its
-previous owner. <br />
-Returns a reference to <code>phony</code>. <br />
-Optionally, a callback function can be provided which will be called
-after the ownership has been restored. If an error occurs it will be
-passed as the first argument to this function, otherwise this argument
-will be <code>null</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-    <span class="nx">noConflict</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">syncSafe</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-        <span class="nx">root</span><span class="p">.</span><span class="nx">phony</span> <span class="o">=</span> <span class="nx">previousPhony</span><span class="p">;</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-      <span class="p">},</span> <span class="nx">callback</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-    <span class="p">}</span>
-
-  <span class="p">};</span>
-
-
-</pre></div>             </td>           </tr>                               <tr id="section-71">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-71">&#182;</a>               </div>               <p>Export <code>phony</code> for NodeJS and CommonJS.</p>             </td>             <td class="code">               <div class="highlight"><pre>
-  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">exports</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">module</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">exports</span> <span class="o">=</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">phony</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="nx">exports</span><span class="p">.</span><span class="nx">phony</span> <span class="o">=</span> <span class="nx">phony</span><span class="p">;</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">define</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">define</span><span class="p">.</span><span class="nx">amd</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">define</span><span class="p">(</span><span class="s1">&#39;phony&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">phony</span><span class="p">;</span>
-    <span class="p">});</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="nx">root</span><span class="p">.</span><span class="nx">phony</span> <span class="o">=</span> <span class="nx">phony</span><span class="p">;</span>
-  <span class="p">}</span>
-
-<span class="p">}(</span><span class="k">this</span><span class="p">));</span>
-
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>phony.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>phony.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p><a href="http://neocotic.com/phony.js">phony.js</a> 1.1.0</p>
+<p>(c) 2014 Alasdair Mercer</p>
+<p>Freely distributable under the MIT license.</p>
+<p>For all details and documentation:</p>
+<p><a href="http://neocotic.com/phony.js">http://neocotic.com/phony.js</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root)</span> </span>{
+<span class="hljs-pi">
+  'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2 id="private-variables">Private variables</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Save the previous value of the <code>phony</code> variable.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> previousPhony = root.phony;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="private-functions">Private functions</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Iterator over a given <code>object</code>.
+If <code>object</code> is an array, yield each element in turn to an <code>iterator</code> function; otherwise do so for the key/value
+mapping of the hash.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> each = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(object, iterator)</span> </span>{
+    <span class="hljs-keyword">if</span> (!object) {
+      <span class="hljs-keyword">return</span> object;
+    }
+
+    <span class="hljs-keyword">var</span> key;
+    <span class="hljs-keyword">var</span> index;
+    <span class="hljs-keyword">var</span> length = object.length;
+
+    <span class="hljs-keyword">if</span> (length === +length) {
+      <span class="hljs-keyword">for</span> (index = <span class="hljs-number">0</span>; index &lt; length; index++) {
+        iterator(object[index], index, object);
+      }
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">for</span> (key <span class="hljs-keyword">in</span> object) {
+        <span class="hljs-keyword">if</span> (object.hasOwnProperty(key)) {
+          iterator(key, object[key], object);
+        }
+      }
+    }
+
+    <span class="hljs-keyword">return</span> object;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Return the character mapped to the specified <code>phonetic</code> from the alphabet with the given <code>name</code> where possible.
+If the named alphabet does not contain a mapping for the phonetic but has a fallback alphabet, that alphabet will
+be checked.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> getAlphabetCharacter = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(name, phonetic)</span> </span>{
+    <span class="hljs-keyword">var</span> alphabet = alphabets[name];
+    <span class="hljs-keyword">var</span> character;
+
+    <span class="hljs-keyword">if</span> (alphabet) {
+      each(alphabet.characters, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ch, ph)</span> </span>{
+        <span class="hljs-keyword">if</span> (ph === phonetic) {
+          character = ch;
+        }
+      });
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> character === <span class="hljs-string">'undefined'</span> &amp;&amp; <span class="hljs-keyword">typeof</span> alphabet.fallback !== <span class="hljs-string">'undefined'</span>) {
+        character = getAlphabetCharacter(alphabet.fallback, phonetic);
+      }
+    }
+
+    <span class="hljs-keyword">return</span> character;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Return the phonetic mapped to the specified <code>character</code> from the alphabet with the given <code>name</code> where possible.
+If the named alphabet does not contain a mapping for the character but has a fallback alphabet, that alphabet will
+be checked.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> getAlphabetPhonetic = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(name, character)</span> </span>{
+    <span class="hljs-keyword">var</span> alphabet = alphabets[name];
+    <span class="hljs-keyword">var</span> phonetic = alphabet.characters[character];
+
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> phonetic === <span class="hljs-string">'undefined'</span> &amp;&amp; alphabet &amp;&amp; <span class="hljs-keyword">typeof</span> alphabet.fallback !== <span class="hljs-string">'undefined'</span>) {
+      phonetic = getAlphabetPhonetic(alphabet.fallback, character);
+    }
+
+    <span class="hljs-keyword">return</span> phonetic;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Return the given <code>options</code> with all of the <code>defaults</code> applied.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> getOptions = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options, defaults)</span> </span>{
+    options = options || {};
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> defaults) {
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> options[key] === <span class="hljs-string">'undefined'</span>) {
+        options[key] = defaults[key];
+      }
+    }
+
+    options.alphabet     = options.alphabet.toLocaleLowerCase();
+    options.wordSplitter = options.wordSplitter.toLocaleLowerCase();
+
+    <span class="hljs-keyword">return</span> options;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Prepare the string to simplify translation.
+The return value is a multi-dimensional array and should be treated as such.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> prepare = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(str, transformer, wordSplitter, letterSplitter)</span> </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> str !== <span class="hljs-string">'string'</span>) {
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">'Invalid value type: '</span> + <span class="hljs-keyword">typeof</span> str);
+    }
+
+    <span class="hljs-keyword">if</span> (transformer) {
+      str = str[transformer]();
+    }
+
+    <span class="hljs-keyword">var</span> rWordSplitter = <span class="hljs-keyword">new</span> <span class="hljs-built_in">RegExp</span>(wordSplitter + <span class="hljs-string">'|[\\n\\r]+'</span>, <span class="hljs-string">'gi'</span>);
+    <span class="hljs-keyword">var</span> result        = str.trim().split(rWordSplitter);
+
+    each(result, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(word, i)</span> </span>{
+      result[i] = word.split(letterSplitter);
+    });
+
+    <span class="hljs-keyword">return</span> result;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Transform a string in to title case.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> toTitleCase = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(str)</span> </span>{
+    <span class="hljs-keyword">return</span> str[<span class="hljs-number">0</span>].toLocaleUpperCase() + str.substring(<span class="hljs-number">1</span>).toLocaleLowerCase();
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h2 id="alphabets">Alphabets</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Map of characters supported initially and their phonetic alphabet counterparts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> alphabets = {
+    ansi: {
+      fallback: <span class="hljs-string">'itu'</span>,
+      characters: {
+        <span class="hljs-string">'A'</span>: <span class="hljs-string">'alpha'</span>,
+        <span class="hljs-string">'J'</span>: <span class="hljs-string">'juliet'</span>
+      }
+    },
+
+    faa: {
+      fallback: <span class="hljs-string">'itu'</span>,
+      characters: {
+        <span class="hljs-string">'0'</span>: <span class="hljs-string">'zero'</span>,
+        <span class="hljs-string">'1'</span>: <span class="hljs-string">'one'</span>,
+        <span class="hljs-string">'2'</span>: <span class="hljs-string">'two'</span>,
+        <span class="hljs-string">'3'</span>: <span class="hljs-string">'three'</span>,
+        <span class="hljs-string">'4'</span>: <span class="hljs-string">'four'</span>,
+        <span class="hljs-string">'5'</span>: <span class="hljs-string">'five'</span>,
+        <span class="hljs-string">'6'</span>: <span class="hljs-string">'six'</span>,
+        <span class="hljs-string">'7'</span>: <span class="hljs-string">'seven'</span>,
+        <span class="hljs-string">'8'</span>: <span class="hljs-string">'eight'</span>,
+        <span class="hljs-string">'9'</span>: <span class="hljs-string">'nine'</span>
+      }
+    },
+
+    icao: {
+      fallback: <span class="hljs-string">'faa'</span>,
+      characters: {
+        <span class="hljs-string">'9'</span>: <span class="hljs-string">'niner'</span>
+      }
+    },
+
+    itu: {
+      characters: {
+        <span class="hljs-string">'A'</span>: <span class="hljs-string">'alfa'</span>,
+        <span class="hljs-string">'B'</span>: <span class="hljs-string">'bravo'</span>,
+        <span class="hljs-string">'C'</span>: <span class="hljs-string">'charlie'</span>,
+        <span class="hljs-string">'D'</span>: <span class="hljs-string">'delta'</span>,
+        <span class="hljs-string">'E'</span>: <span class="hljs-string">'echo'</span>,
+        <span class="hljs-string">'F'</span>: <span class="hljs-string">'foxtrot'</span>,
+        <span class="hljs-string">'G'</span>: <span class="hljs-string">'golf'</span>,
+        <span class="hljs-string">'H'</span>: <span class="hljs-string">'hotel'</span>,
+        <span class="hljs-string">'I'</span>: <span class="hljs-string">'india'</span>,
+        <span class="hljs-string">'J'</span>: <span class="hljs-string">'juliett'</span>,
+        <span class="hljs-string">'K'</span>: <span class="hljs-string">'kilo'</span>,
+        <span class="hljs-string">'L'</span>: <span class="hljs-string">'lima'</span>,
+        <span class="hljs-string">'M'</span>: <span class="hljs-string">'mike'</span>,
+        <span class="hljs-string">'N'</span>: <span class="hljs-string">'november'</span>,
+        <span class="hljs-string">'O'</span>: <span class="hljs-string">'oscar'</span>,
+        <span class="hljs-string">'P'</span>: <span class="hljs-string">'papa'</span>,
+        <span class="hljs-string">'Q'</span>: <span class="hljs-string">'quebec'</span>,
+        <span class="hljs-string">'R'</span>: <span class="hljs-string">'romeo'</span>,
+        <span class="hljs-string">'S'</span>: <span class="hljs-string">'sierra'</span>,
+        <span class="hljs-string">'T'</span>: <span class="hljs-string">'tango'</span>,
+        <span class="hljs-string">'U'</span>: <span class="hljs-string">'uniform'</span>,
+        <span class="hljs-string">'V'</span>: <span class="hljs-string">'victor'</span>,
+        <span class="hljs-string">'W'</span>: <span class="hljs-string">'whiskey'</span>,
+        <span class="hljs-string">'X'</span>: <span class="hljs-string">'x-ray'</span>,
+        <span class="hljs-string">'Y'</span>: <span class="hljs-string">'yankee'</span>,
+        <span class="hljs-string">'Z'</span>: <span class="hljs-string">'zulu'</span>,
+        <span class="hljs-string">'0'</span>: <span class="hljs-string">'nadazero'</span>,
+        <span class="hljs-string">'1'</span>: <span class="hljs-string">'unaone'</span>,
+        <span class="hljs-string">'2'</span>: <span class="hljs-string">'bissotwo'</span>,
+        <span class="hljs-string">'3'</span>: <span class="hljs-string">'terrathree'</span>,
+        <span class="hljs-string">'4'</span>: <span class="hljs-string">'kartefour'</span>,
+        <span class="hljs-string">'5'</span>: <span class="hljs-string">'pantafive'</span>,
+        <span class="hljs-string">'6'</span>: <span class="hljs-string">'soxisix'</span>,
+        <span class="hljs-string">'7'</span>: <span class="hljs-string">'setteseven'</span>,
+        <span class="hljs-string">'8'</span>: <span class="hljs-string">'oktoeight'</span>,
+        <span class="hljs-string">'9'</span>: <span class="hljs-string">'novenine'</span>,
+        <span class="hljs-string">'.'</span>: <span class="hljs-string">'stop'</span>,
+        <span class="hljs-string">'-'</span>: <span class="hljs-string">'dash'</span>
+      }
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h2 id="phony-setup">Phony setup</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Build the publicly exposed API.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> phony = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h2 id="constants">Constants</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Current version of <code>phony</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    VERSION: <span class="hljs-string">'1.1.0'</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <h2 id="variables">Variables</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Expose the available alphabets.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    alphabets: alphabets,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Default values to be used if no options are specified or are incomplete.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    defaults: {
+      alphabet:       <span class="hljs-string">'itu'</span>,
+      letterSplitter: <span class="hljs-string">' '</span>,
+      wordSplitter:   <span class="hljs-string">'space'</span>
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <h2 id="primary-functions">Primary functions</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>Translate the <code>message</code> provided <em>from</em> the phonetic alphabet.
+The message may not be translated correctly if the some of the options used to translate the message originally
+are not the same as those in <code>options</code>.
+If the <code>alphabet</code> option is not specified, the default alphabet will be used.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    from: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message, options)</span> </span>{
+      message = message || <span class="hljs-string">''</span>;
+      options = getOptions(options, phony.defaults);
+
+      <span class="hljs-keyword">var</span> result = <span class="hljs-string">''</span>;
+      <span class="hljs-keyword">var</span> value  = prepare(message, <span class="hljs-string">'toLocaleLowerCase'</span>, options.wordSplitter, options.letterSplitter);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>Ensure message was prepared successfully and that a valid alphabet was specified.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (!value || !alphabets[options.alphabet]) {
+        <span class="hljs-keyword">return</span> result;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Iterate over each word.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      each(value, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(word, i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Insert space between each word.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">0</span>) {
+          result += <span class="hljs-string">' '</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Iterate over each phonetic representation in the word.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        each(word, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(phonetic)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Reverse engineer character from phonetic representation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">var</span> character = getAlphabetCharacter(options.alphabet, phonetic);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Check if character is supported.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> character === <span class="hljs-string">'string'</span>) {
+            result += character;
+          }
+        });
+      });
+
+      <span class="hljs-keyword">return</span> result;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Translate the <code>message</code> provided <em>to</em> the phonetic alphabet.
+If the <code>alphabet</code> option is not specified, the default alphabet will be used.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    to: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message, options)</span> </span>{
+      message = message || <span class="hljs-string">''</span>;
+      options = getOptions(options, phony.defaults);
+
+      <span class="hljs-keyword">var</span> letterSplitter = options.letterSplitter;
+      <span class="hljs-keyword">var</span> result         = <span class="hljs-string">''</span>;
+      <span class="hljs-keyword">var</span> value          = prepare(message, <span class="hljs-string">'toLocaleUpperCase'</span>, <span class="hljs-string">'\\s+'</span>, <span class="hljs-string">''</span>);
+      <span class="hljs-keyword">var</span> wordSplitter   = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>Ensure message was prepared successfully and that a valid alphabet was specified.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (!value || !alphabets[options.alphabet]) {
+        <span class="hljs-keyword">return</span> result;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>Iterate over each word.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      each(value, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(word, i)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Insert <code>wordSplitter</code> option between each word.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">0</span>) {
+          result += wordSplitter;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Iterate over each character in the word.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        each(word, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(character, j)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>Insert <code>letterSplitter</code> option between each character.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">if</span> (j &gt; <span class="hljs-number">0</span>) {
+            result += letterSplitter;
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Reverse engineer character from phonetic representation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">var</span> phonetic = getAlphabetPhonetic(options.alphabet, character);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>Check if phonetic representation is supported.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> phonetic === <span class="hljs-string">'string'</span>) {
+            result += toTitleCase(phonetic);
+          }
+        });
+      });
+
+      <span class="hljs-keyword">return</span> result;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <h2 id="utility-functions">Utility functions</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Run phony.js in <em>noConflict</em> mode, returning the <code>phony</code> variable to its previous owner.
+Returns a reference to <code>phony</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    noConflict: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      root.phony = previousPhony;
+
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    }
+
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>Export <code>phony</code> for NodeJS and CommonJS.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> exports !== <span class="hljs-string">'undefined'</span>) {
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">module</span> !== <span class="hljs-string">'undefined'</span> &amp;&amp; <span class="hljs-built_in">module</span>.exports) {
+      exports = <span class="hljs-built_in">module</span>.exports = phony;
+    }
+
+    exports.phony = phony;
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> define === <span class="hljs-string">'function'</span> &amp;&amp; define.amd) {
+    define(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">return</span> phony;
+    });
+  } <span class="hljs-keyword">else</span> {
+    root.phony = phony;
+  }
+
+})(<span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

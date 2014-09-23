@@ -39,7 +39,7 @@ optional themselves):
 | Option         | Description                                              | Default   |
 | -------------- | -------------------------------------------------------- | --------- |
 | alphabet       | Name of the alphabet to be used to translate the message | `"itu"`   |
-| letterSplitter | Sequence of characters to split lette   rs               | `" "`     |
+| letterSplitter | Sequence of characters to split letters                  | `" "`     |
 | wordSplitter   | Sequence of characters to split words                    | `"space"` |
 
 It's important to note that the same options should be used in order for bidirectional translations to work. Some of
@@ -129,7 +129,7 @@ This is really just intended for use within a browser.
 The current version of `phony`.
 
 ``` javascript
-console.log(phony.VERSION); // "1.0.1"
+console.log(phony.VERSION); // "1.1.0"
 ```
 
 ## Bugs
