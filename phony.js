@@ -74,7 +74,7 @@
   // be checked.
   var getAlphabetPhonetic = function(name, character) {
     var alphabet = alphabets[name];
-    var phonetic = alphabet[character];
+    var phonetic = alphabet.characters[character];
 
     if (typeof phonetic === 'undefined' && alphabet && typeof alphabet.fallback !== 'undefined') {
       phonetic = getAlphabetPhonetic(alphabet.fallback, character);
@@ -93,21 +93,25 @@
       }
     }
 
-    options.alphabet      = options.alphabet.toLocaleLowerCase();
-    options.wordDelimiter = options.wordDelimiter.toLocaleLowerCase();
+    options.alphabet     = options.alphabet.toLocaleLowerCase();
+    options.wordSplitter = options.wordSplitter.toLocaleLowerCase();
 
     return options;
   };
 
   // Prepare the string to simplify translation.
   // The return value is a multi-dimensional array and should be treated as such.
-  var prepare = function(str, wordSplitter, letterSplitter) {
+  var prepare = function(str, transformer, wordSplitter, letterSplitter) {
     if (typeof str !== 'string') {
       throw new TypeError('Invalid value type: ' + typeof str);
     }
 
-    var rWordSplitter = new RegExp(wordSplitter + '|[\\n\\r]+', 'g');
-    var result        = str.trim().toLocaleLowerCase().split(rWordSplitter);
+    if (transformer) {
+      str = str[transformer]();
+    }
+
+    var rWordSplitter = new RegExp(wordSplitter + '|[\\n\\r]+', 'gi');
+    var result        = str.trim().split(rWordSplitter);
 
     each(result, function(word, i) {
       result[i] = word.split(letterSplitter);
@@ -238,10 +242,10 @@
       options = getOptions(options, phony.defaults);
 
       var result = '';
-      var value  = prepare(message, options.wordSplitter, options.letterSplitter);
+      var value  = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
 
-      // Ensure message was prepared successfully.
-      if (!value) {
+      // Ensure message was prepared successfully and that a valid alphabet was specified.
+      if (!value || !alphabets[options.alphabet]) {
         return result;
       }
 
@@ -273,12 +277,13 @@
       message = message || '';
       options = getOptions(options, phony.defaults);
 
-      var result       = '';
-      var value        = prepare(message, '\\s+', '');
-      var wordSplitter = toTitleCase(options.wordSplitter);
+      var letterSplitter = options.letterSplitter;
+      var result         = '';
+      var value          = prepare(message, 'toLocaleUpperCase', '\\s+', '');
+      var wordSplitter   = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
 
-      // Ensure message was prepared successfully.
-      if (!value) {
+      // Ensure message was prepared successfully and that a valid alphabet was specified.
+      if (!value || !alphabets[options.alphabet]) {
         return result;
       }
 
@@ -293,7 +298,7 @@
         each(word, function(character, j) {
           // Insert `letterSplitter` option between each character.
           if (j > 0) {
-            result += options.letterSplitter;
+            result += letterSplitter;
           }
 
           // Reverse engineer character from phonetic representation.
