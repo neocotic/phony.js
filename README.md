@@ -36,14 +36,16 @@ string to the `to` and `from` functions respectively.
 Both of which also accept an optional `options` parameter which can currently contain the following (all of which are
 optional themselves):
 
-| Option        | Description                                              | Default |
-| ------------- | -------------------------------------------------------- | ------- |
-| alphabet      | Name of the alphabet to be used to translate the message | `"ITU"` |
-| caseSensitive | Whether the translation should be case sensitive         | `true`  |
-| omitSpace     | Whether words should be split up by `"Space"`            | `false` |
-| round         | Whether hundreds and thousands should be rounded         | `true`  |
+| Option         | Description                                              | Default   |
+| -------------- | -------------------------------------------------------- | --------- |
+| alphabet       | Name of the alphabet to be used to translate the message | `"itu"`   |
+| letterSplitter | Sequence of characters to split lette   rs               | `" "`     |
+| wordSplitter   | Sequence of characters to split words                    | `"space"` |
 
-It's important to note that the same options should be used in order for bidirectional translations to work.
+It's important to note that the same options should be used in order for bidirectional translations to work. Some of
+these strings are used to build regular expressions (or can be regular expressions), so it's recommended to
+familiarized yourself with the usage of the options before change them, just so you know on which you need to escape
+any `RegExp` special characters.
 
 ### `to(message[, options])`
 
@@ -63,9 +65,48 @@ console.log(phony.from('Sierra Oscar Sierra')); // "SOS"
 
 ### Customization
 
-#### `ALPHABETS`
+#### `alphabets`
 
-TODO: Document
+Alphabets are key to translating messages to and from the phonetic alphabet as they contain characters use to find and
+replace phonetic representations in the message. Alphabets can declare fallback alphabets so that, if it does not
+contain a matching character or phonetic representation, it will attempt to look it up from the fallback alphabet, and
+so on. For this reason, if you plan on creating a custom alphabet, it's recommended that you always specify a fallback
+alphabet.
+
+Here's a list of the built in alphabets:
+
+- ansi
+- faa
+- icao
+- itu (default)
+
+Adding a new alphabet is as simple as the following:
+
+``` javascript
+phony.alphabets.foo = {
+  fallback: 'itu',
+  characters: {
+    'H': 'hello',
+    'W': 'world'
+  }
+};
+
+var options = {alphabet: 'foo'};
+
+console.log(phony.to('how', options));                 // "Hello Oscar World"
+console.log(phony.from('Hello Oscar World', options)); // "HOW"
+```
+
+#### `defaults`
+
+This is a hash of default values to be applied to the optional `options` parameter and exposed to allow you to override
+any of them.
+
+``` javascript
+phony.defaults.alphabet = 'ANSI';
+
+console.log(phony.to('A')); // "Alpha"
+```
 
 ### Miscellaneous
 
