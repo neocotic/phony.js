@@ -1,6 +1,6 @@
 // [phony.js](http://neocotic.com/phony.js) 1.0.1
 //
-// (c) 2011 Alasdair Mercer
+// (c) 2014 Alasdair Mercer
 //
 // Freely distributable under the MIT license.
 //
