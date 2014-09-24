@@ -82,7 +82,7 @@ module.exports = function(grunt) {
         },
         options: {
           banner: (
-            '/*! <%= pkg.name %> v<%= pkg.version %> | (c) <%= grunt.template.today("yyyy") %>' +
+            '/*! phony v<%= pkg.version %> | (c) <%= grunt.template.today("yyyy") %>' +
             ' <%= pkg.author.name %> | <%= pkg.licenses[0].type %> License\n' +
             '*/'
           ),
