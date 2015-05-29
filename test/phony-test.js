@@ -159,7 +159,7 @@ describe('phony', function() {
 
       loadFixture('ansi.txt', function(source) {
         loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/\n/g, ' '));
+          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
 
           done();
         });
@@ -176,7 +176,7 @@ describe('phony', function() {
 
       loadFixture('faa.txt', function(source) {
         loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/\n/g, ' '));
+          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
 
           done();
         });
@@ -193,7 +193,7 @@ describe('phony', function() {
 
       loadFixture('icao.txt', function(source) {
         loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/\n/g, ' '));
+          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
 
           done();
         });
@@ -210,7 +210,7 @@ describe('phony', function() {
 
       loadFixture('itu.txt', function(source) {
         loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/\n/g, ' '));
+          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
 
           done();
         });
@@ -271,7 +271,7 @@ describe('phony', function() {
 
       loadFixture('characters.txt', function(source) {
         loadFixture('ansi.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/\n/g, ' Space '));
+          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
 
           done();
         });
@@ -288,7 +288,7 @@ describe('phony', function() {
 
       loadFixture('characters.txt', function(source) {
         loadFixture('faa.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/\n/g, ' Space '));
+          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
 
           done();
         });
@@ -305,7 +305,7 @@ describe('phony', function() {
 
       loadFixture('characters.txt', function(source) {
         loadFixture('icao.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/\n/g, ' Space '));
+          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
 
           done();
         });
@@ -322,7 +322,7 @@ describe('phony', function() {
 
       loadFixture('characters.txt', function(source) {
         loadFixture('itu.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/\n/g, ' Space '));
+          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
 
           done();
         });
