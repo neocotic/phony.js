@@ -8,7 +8,28 @@
 //
 // <http://neocotic.com/phony.js>
 
-(function(root) {
+(function(factory) {
+
+  'use strict';
+
+  // Determine the correct root object for the current environment (browser or server).
+  var root = (typeof self === 'object' && self.self === self && self) ||
+      (typeof global === 'object' && global.global === global && global);
+
+  // Define for AMD but also export to root for those expecting global `phony`.
+  if (typeof define === 'function' && define.amd) {
+    define(['exports'], function(exports) {
+      root.phony = factory(root, exports);
+    });
+  } else if (typeof exports !== 'undefined') {
+    // Support Node.js and the CommonJS pattern.
+    factory(root, exports);
+  } else {
+    // Fall back on browser support.
+    root.phony = factory(root, {});
+  }
+
+}(function(root, phony) {
 
   'use strict';
 
@@ -205,141 +226,120 @@
     }
   };
 
-  // Phony setup
-  // -----------
+  // Constants
+  // ---------
 
-  // Build the publicly exposed API.
-  var phony = {
+  // Current version of `phony`.
+  phony.VERSION = '1.1.0';
 
-    // Constants
-    // ---------
+  // Variables
+  // ---------
 
-    // Current version of `phony`.
-    VERSION: '1.1.0',
+  // Expose the available alphabets.
+  phony.alphabets = alphabets;
 
-    // Variables
-    // ---------
-
-    // Expose the available alphabets.
-    alphabets: alphabets,
-
-    // Default values to be used if no options are specified or are incomplete.
-    defaults: {
-      alphabet:       'itu',
-      letterSplitter: ' ',
-      wordSplitter:   'space'
-    },
-
-    // Primary functions
-    // -----------------
-
-    // Translate the `message` provided *from* the phonetic alphabet.
-    // The message may not be translated correctly if the some of the options used to translate the message originally
-    // are not the same as those in `options`.
-    // If the `alphabet` option is not specified, the default alphabet will be used.
-    from: function(message, options) {
-      message = message || '';
-      options = getOptions(options, phony.defaults);
-
-      var result = '';
-      var value  = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
-
-      // Ensure message was prepared successfully and that a valid alphabet was specified.
-      if (!value || !alphabets[options.alphabet]) {
-        return result;
-      }
-
-      // Iterate over each word.
-      each(value, function(word, i) {
-        // Insert space between each word.
-        if (i > 0) {
-          result += ' ';
-        }
-
-        // Iterate over each phonetic representation in the word.
-        each(word, function(phonetic) {
-          // Reverse engineer character from phonetic representation.
-          var character = getAlphabetCharacter(options.alphabet, phonetic);
-
-          // Check if character is supported.
-          if (typeof character === 'string') {
-            result += character;
-          }
-        });
-      });
-
-      return result;
-    },
-
-    // Translate the `message` provided *to* the phonetic alphabet.
-    // If the `alphabet` option is not specified, the default alphabet will be used.
-    to: function(message, options) {
-      message = message || '';
-      options = getOptions(options, phony.defaults);
-
-      var letterSplitter = options.letterSplitter;
-      var result         = '';
-      var value          = prepare(message, 'toLocaleUpperCase', '\\s+', '');
-      var wordSplitter   = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
-
-      // Ensure message was prepared successfully and that a valid alphabet was specified.
-      if (!value || !alphabets[options.alphabet]) {
-        return result;
-      }
-
-      // Iterate over each word.
-      each(value, function(word, i) {
-        // Insert `wordSplitter` option between each word.
-        if (i > 0) {
-          result += wordSplitter;
-        }
-
-        // Iterate over each character in the word.
-        each(word, function(character, j) {
-          // Insert `letterSplitter` option between each character.
-          if (j > 0) {
-            result += letterSplitter;
-          }
-
-          // Reverse engineer character from phonetic representation.
-          var phonetic = getAlphabetPhonetic(options.alphabet, character);
-
-          // Check if phonetic representation is supported.
-          if (typeof phonetic === 'string') {
-            result += toTitleCase(phonetic);
-          }
-        });
-      });
-
-      return result;
-    },
-
-    // Utility functions
-    // -----------------
-
-    // Run phony.js in *noConflict* mode, returning the `phony` variable to its previous owner.
-    // Returns a reference to `phony`.
-    noConflict: function() {
-      root.phony = previousPhony;
-
-      return this;
-    }
-
+  // Default values to be used if no options are specified or are incomplete.
+  phony.defaults = {
+    alphabet:       'itu',
+    letterSplitter: ' ',
+    wordSplitter:   'space'
   };
 
-  // Export `phony` for NodeJS and CommonJS.
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = phony;
+  // Primary functions
+  // -----------------
+
+  // Translate the `message` provided *from* the phonetic alphabet.
+  // The message may not be translated correctly if the some of the options used to translate the message originally
+  // are not the same as those in `options`.
+  // If the `alphabet` option is not specified, the default alphabet will be used.
+  phony.from = function(message, options) {
+    message = message || '';
+    options = getOptions(options, phony.defaults);
+
+    var result = '';
+    var value  = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
+
+    // Ensure message was prepared successfully and that a valid alphabet was specified.
+    if (!value || !alphabets[options.alphabet]) {
+      return result;
     }
 
-    exports.phony = phony;
-  } else if (typeof define === 'function' && define.amd) {
-    define(function() {
-      return phony;
-    });
-  } else {
-    root.phony = phony;
-  }
+    // Iterate over each word.
+    each(value, function(word, i) {
+      // Insert space between each word.
+      if (i > 0) {
+        result += ' ';
+      }
 
-})(this);
+      // Iterate over each phonetic representation in the word.
+      each(word, function(phonetic) {
+        // Reverse engineer character from phonetic representation.
+        var character = getAlphabetCharacter(options.alphabet, phonetic);
+
+        // Check if character is supported.
+        if (typeof character === 'string') {
+          result += character;
+        }
+      });
+    });
+
+    return result;
+  };
+
+  // Translate the `message` provided *to* the phonetic alphabet.
+  // If the `alphabet` option is not specified, the default alphabet will be used.
+  phony.to = function(message, options) {
+    message = message || '';
+    options = getOptions(options, phony.defaults);
+
+    var letterSplitter = options.letterSplitter;
+    var result         = '';
+    var value          = prepare(message, 'toLocaleUpperCase', '\\s+', '');
+    var wordSplitter   = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
+
+    // Ensure message was prepared successfully and that a valid alphabet was specified.
+    if (!value || !alphabets[options.alphabet]) {
+      return result;
+    }
+
+    // Iterate over each word.
+    each(value, function(word, i) {
+      // Insert `wordSplitter` option between each word.
+      if (i > 0) {
+        result += wordSplitter;
+      }
+
+      // Iterate over each character in the word.
+      each(word, function(character, j) {
+        // Insert `letterSplitter` option between each character.
+        if (j > 0) {
+          result += letterSplitter;
+        }
+
+        // Reverse engineer character from phonetic representation.
+        var phonetic = getAlphabetPhonetic(options.alphabet, character);
+
+        // Check if phonetic representation is supported.
+        if (typeof phonetic === 'string') {
+          result += toTitleCase(phonetic);
+        }
+      });
+    });
+
+    return result;
+  };
+
+  // Utility functions
+  // -----------------
+
+  // Run phony.js in *noConflict* mode, returning the `phony` variable to its previous owner.
+  // Returns a reference to `phony`.
+  phony.noConflict = function() {
+    root.phony = previousPhony;
+
+    return this;
+  };
+
+  return phony;
+
+}));
