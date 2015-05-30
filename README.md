@@ -1,12 +1,14 @@
-           __
-          /\ \                                   __
-     _____\ \ \___     ___    ___   __  __      /\_\    ____
-    /\ '__`\ \  _ `\  / __`\/' _ `\/\ \/\ \     \/\ \  /',__\
-    \ \ \L\ \ \ \ \ \/\ \L\ \\ \/\ \ \ \_\ \  __ \ \ \/\__, `\
-     \ \ ,__/\ \_\ \_\ \____/ \_\ \_\/`____ \/\_\_\ \ \/\____/
-      \ \ \/  \/_/\/_/\/___/ \/_/\/_/`/___/> \/_/\ \_\ \/___/
-       \ \_\                            /\___/  \ \____/
-        \/_/                            \/__/    \/___/
+```
+       __
+      /\ \
+ _____\ \ \___     ___    ___   __  __
+/\ '__`\ \  _ `\  / __`\/' _ `\/\ \/\ \
+\ \ \L\ \ \ \ \ \/\ \L\ \\ \/\ \ \ \_\ \
+ \ \ ,__/\ \_\ \_\ \____/ \_\ \_\/`____ \
+  \ \ \/  \/_/\/_/\/___/ \/_/\/_/`/___/> \
+   \ \_\                            /\___/
+    \/_/                            \/__/
+```
 
 [phony.js][0] is a pure JavaScript library for translating to/from the [NATO phonetic alphabet][3] that supports
 extensible characters.
@@ -52,7 +54,8 @@ any `RegExp` special characters.
 Translates the `message` parameter *to* the phonetic alphabet.
 
 ``` javascript
-console.log(phony.to('SOS')); // "Sierra Oscar Sierra"
+phony.to('SOS');
+//=> "Sierra Oscar Sierra"
 ```
 
 ### `from(message[, options])`
@@ -60,7 +63,8 @@ console.log(phony.to('SOS')); // "Sierra Oscar Sierra"
 Translates the `message` parameter *from* the phonetic alphabet.
 
 ``` javascript
-console.log(phony.from('Sierra Oscar Sierra')); // "SOS"
+phony.from('Sierra Oscar Sierra');
+//=> "SOS"
 ```
 
 ### Customization
@@ -93,8 +97,10 @@ phony.alphabets.foo = {
 
 var options = {alphabet: 'foo'};
 
-console.log(phony.to('how', options));                 // "Hello Oscar World"
-console.log(phony.from('Hello Oscar World', options)); // "HOW"
+phony.to('how', options);
+//=> "Hello Oscar World"
+phony.from('Hello Oscar World', options);
+//=> "HOW"
 ```
 
 #### `defaults`
@@ -105,7 +111,8 @@ any of them.
 ``` javascript
 phony.defaults.alphabet = 'ANSI';
 
-console.log(phony.to('A')); // "Alpha"
+phony.to('A');
+//=> "Alpha"
 ```
 
 ### Miscellaneous
@@ -129,7 +136,8 @@ This is really just intended for use within a browser.
 The current version of `phony`.
 
 ``` javascript
-console.log(phony.VERSION); // "1.1.0"
+phony.VERSION;
+//=> "1.1.0"
 ```
 
 ## Bugs
