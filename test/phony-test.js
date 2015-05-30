@@ -1,25 +1,34 @@
 'use strict';
 
-// Load external dependencies.
 var expect = require('expect.js');
 var fs = require('fs');
 var path = require('path');
 var q = require('q');
 
-// Load internal dependencies.
 var phony = require('../phony');
 
-// Regular expression used to find and replace EOL characters.
+/**
+ * The regular expression used to find and replace EOL characters.
+ *
+ * @type {RegExp}
+ */
 var rEOL = /[\n\r]+/g;
 
-// Load the contents of a text fixture asynchronously.
+/**
+ * Loads the contents of a test fixture asynchronously.
+ *
+ * @param {String} filePath - the path to the file of the test fixture to be loaded
+ * @returns {q.Promise} A promise to track the file loading.
+ */
 function loadFixture(filePath) {
   filePath = path.join('test', 'fixtures', filePath);
 
-  return q.nfcall(fs.readFile, filePath, {encoding: 'utf8'});
+  return q.nfcall(fs.readFile, filePath, {encoding: 'utf8'})
+  .then(function(fixture) {
+    return fixture.trim();
+  });
 }
 
-// Run test suite.
 describe('phony', function() {
   it('should be exported as an object', function() {
     expect(phony).to.be.an(Object);

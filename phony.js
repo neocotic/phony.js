@@ -19,17 +19,17 @@
       (typeof global === 'object' && global.global === global && global);
 
   if (typeof define === 'function' && define.amd) {
-    // Define for AMD but also export to root for those expecting global phony.
+    // Defines for AMD but also exports to root for those expecting global phony
     define(function() {
       root.phony = factory(root);
 
       return root.phony;
     });
   } else if (typeof module !== 'undefined' && module.exports) {
-    // Support Node.js and the CommonJS pattern.
+    // Supports Node.js and the CommonJS patterns
     exports = module.exports = factory(root);
   } else {
-    // Fall back on browser support.
+    // Falls back on browser support
     root.phony = factory(root);
   }
 }(function(root) {
@@ -359,24 +359,24 @@
     var result = '';
     var value = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
 
-    // Ensure message was prepared successfully and that a valid alphabet was specified.
+    // Ensures message was prepared successfully and that a valid alphabet was specified
     if (!value || !phony.alphabets[options.alphabet]) {
       return result;
     }
 
-    // Iterate over each word.
+    // Iterates over each word
     each(value, function(word, i) {
-      // Insert space between each word.
+      // Inserts space between each word
       if (i > 0) {
         result += ' ';
       }
 
-      // Iterate over each phonetic representation in the word.
+      // Iterates over each phonetic representation in the word
       each(word, function(phonetic) {
-        // Reverse engineer character from phonetic representation.
+        // Reverse engineers character from phonetic representation
         var character = getAlphabetCharacter(options.alphabet, phonetic);
 
-        // Check if character is supported.
+        // Checks if character is supported
         if (typeof character === 'string') {
           result += character;
         }
@@ -404,29 +404,29 @@
     var value = prepare(message, 'toLocaleUpperCase', '\\s+', '');
     var wordSplitter = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
 
-    // Ensure message was prepared successfully and that a valid alphabet was specified.
+    // Ensures message was prepared successfully and that a valid alphabet was specified
     if (!value || !phony.alphabets[options.alphabet]) {
       return result;
     }
 
-    // Iterate over each word.
+    // Iterates over each word
     each(value, function(word, i) {
-      // Insert wordSplitter option between each word.
+      // Inserts wordSplitter option between each word
       if (i > 0) {
         result += wordSplitter;
       }
 
-      // Iterate over each character in the word.
+      // Iterates over each character in the word
       each(word, function(character, j) {
-        // Insert letterSplitter option between each character.
+        // Inserts letterSplitter option between each character
         if (j > 0) {
           result += letterSplitter;
         }
 
-        // Reverse engineer character from phonetic representation.
+        // Reverse engineers character from phonetic representation
         var phonetic = getAlphabetPhonetic(options.alphabet, character);
 
-        // Check if phonetic representation is supported.
+        // Checks if phonetic representation is supported
         if (typeof phonetic === 'string') {
           result += toTitleCase(phonetic);
         }
