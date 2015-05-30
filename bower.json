@@ -27,7 +27,7 @@
     "type": "git",
     "url": "git://github.com/neocotic/phony.js.git"
   },
-  "main": "phony.min.js",
+  "main": "phony.js",
   "ignore": [
     "**/.*",
     "docs",
@@ -37,8 +37,7 @@
     "CONTRIBUTING.md",
     "Gruntfile.js",
     "INSTALL.md",
-    "README.md",
-    "bower.json",
-    "package.json"
+    "package.json",
+    "README.md"
   ]
 }
