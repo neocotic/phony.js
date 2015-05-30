@@ -1,19 +1,12 @@
 module.exports = function(grunt) {
   'use strict';
 
-  // Configuration
-  // -------------
-
   grunt.initConfig({
+
     pkg: grunt.file.readJSON('package.json'),
 
-    docco: {
-      all: {
-        options: {
-          output: 'docs'
-        },
-        src: 'phony.js'
-      }
+    clean: {
+      docs: ['docs']
     },
 
     eslint: {
@@ -22,6 +15,15 @@ module.exports = function(grunt) {
         'phony.js',
         'test/**/*.js'
       ]
+    },
+
+    jsdoc: {
+      all: {
+        options: {
+          destination: 'docs'
+        },
+        src: ['phony.js']
+      }
     },
 
     mochaTest: {
@@ -57,18 +59,18 @@ module.exports = function(grunt) {
         tasks: ['test']
       }
     }
+
   });
 
-  // Tasks
-  // -----
-
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-docco');
   grunt.loadNpmTasks('grunt-eslint');
+  grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('dist', ['test', 'uglify', 'docco']);
+  grunt.registerTask('dist', ['test', 'uglify', 'docs']);
+  grunt.registerTask('docs', ['clean:docs', 'jsdoc']);
   grunt.registerTask('test', ['eslint', 'mochaTest']);
 };
