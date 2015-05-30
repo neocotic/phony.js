@@ -1,12 +1,10 @@
 module.exports = function(grunt) {
-
   'use strict';
 
   // Configuration
   // -------------
 
   grunt.initConfig({
-
     pkg: grunt.file.readJSON('package.json'),
 
     docco: {
@@ -18,53 +16,12 @@ module.exports = function(grunt) {
       }
     },
 
-    jshint: {
-      main: [
+    eslint: {
+      target: [
         'Gruntfile.js',
-        'phony.js'
-      ],
-      test: {
-        files: {
-          src: ['test/**/*.js']
-        },
-        options: {
-          globals:      {
-            after:      false,
-            afterEach:  false,
-            before:     false,
-            beforeEach: false,
-            describe:   false,
-            it:         false
-          },
-          globalstrict: true,
-          strict:       false
-        }
-      },
-      options: {
-        boss:      true,
-        browser:   true,
-        camelcase: true,
-        curly:     true,
-        devel:     false,
-        eqeqeq:    true,
-        expr:      true,
-        globals:   {
-          define: false,
-          self: false
-        },
-        immed:     true,
-        latedef:   true,
-        laxcomma:  false,
-        maxlen:    120,
-        newcap:    true,
-        noarg:     true,
-        node:      true,
-        nonew:     true,
-        quotmark:  'single',
-        strict:    true,
-        undef:     true,
-        unused:    true
-      }
+        'phony.js',
+        'test/**/*.js'
+      ]
     },
 
     mochaTest: {
@@ -82,11 +39,11 @@ module.exports = function(grunt) {
           'phony.min.js': 'phony.js'
         },
         options: {
-          banner: (
-            '/*! phony v<%= pkg.version %> | (c) <%= grunt.template.today("yyyy") %>' +
-            ' <%= pkg.author.name %> | <%= pkg.licenses[0].type %> License\n' +
+          banner: [
+            '/*! phony v<%= pkg.version %> | (c) <%= grunt.template.today("yyyy") %>',
+            ' <%= pkg.author.name %> | <%= pkg.licenses[0].type %> License\n',
             '*/'
-          ),
+          ].join(''),
           report: 'min',
           sourceMap: true,
           sourceMapName: 'phony.min.map'
@@ -100,20 +57,18 @@ module.exports = function(grunt) {
         tasks: ['test']
       }
     }
-
   });
 
   // Tasks
   // -----
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-docco');
+  grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-mocha-test');
 
-  grunt.registerTask('default', [ 'test' ]);
-  grunt.registerTask('dist', [ 'test', 'uglify', 'docco' ]);
-  grunt.registerTask('test', [ 'jshint', 'mochaTest' ]);
-
+  grunt.registerTask('default', ['test']);
+  grunt.registerTask('dist', ['test', 'uglify', 'docco']);
+  grunt.registerTask('test', ['eslint', 'mochaTest']);
 };

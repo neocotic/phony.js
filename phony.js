@@ -9,7 +9,6 @@
 // <http://neocotic.com/phony.js>
 
 (function(factory) {
-
   'use strict';
 
   // Determine the correct root object for the current environment (browser or server).
@@ -28,9 +27,7 @@
     // Fall back on browser support.
     root.phony = factory(root, {});
   }
-
 }(function(root, phony) {
-
   'use strict';
 
   // Private variables
@@ -38,113 +35,6 @@
 
   // Save the previous value of the `phony` variable.
   var previousPhony = root.phony;
-
-  // Private functions
-  // -----------------
-  // Iterator over a given `object`.
-  // If `object` is an array, yield each element in turn to an `iterator` function; otherwise do so for the key/value
-  // mapping of the hash.
-  var each = function(object, iterator) {
-    if (!object) {
-      return object;
-    }
-
-    var key;
-    var index;
-    var length = object.length;
-
-    if (length === +length) {
-      for (index = 0; index < length; index++) {
-        iterator(object[index], index, object);
-      }
-    } else {
-      for (key in object) {
-        if (object.hasOwnProperty(key)) {
-          iterator(key, object[key], object);
-        }
-      }
-    }
-
-    return object;
-  };
-
-  // Return the character mapped to the specified `phonetic` from the alphabet with the given `name` where possible.
-  // If the named alphabet does not contain a mapping for the phonetic but has a fallback alphabet, that alphabet will
-  // be checked.
-  var getAlphabetCharacter = function(name, phonetic) {
-    var alphabet = alphabets[name];
-    var character;
-
-    if (alphabet) {
-      each(alphabet.characters, function(ch, ph) {
-        if (ph === phonetic) {
-          character = ch;
-        }
-      });
-
-      if (typeof character === 'undefined' && typeof alphabet.fallback !== 'undefined') {
-        character = getAlphabetCharacter(alphabet.fallback, phonetic);
-      }
-    }
-
-    return character;
-  };
-
-  // Return the phonetic mapped to the specified `character` from the alphabet with the given `name` where possible.
-  // If the named alphabet does not contain a mapping for the character but has a fallback alphabet, that alphabet will
-  // be checked.
-  var getAlphabetPhonetic = function(name, character) {
-    var alphabet = alphabets[name];
-    var phonetic = alphabet.characters[character];
-
-    if (typeof phonetic === 'undefined' && alphabet && typeof alphabet.fallback !== 'undefined') {
-      phonetic = getAlphabetPhonetic(alphabet.fallback, character);
-    }
-
-    return phonetic;
-  };
-
-  // Return the given `options` with all of the `defaults` applied.
-  var getOptions = function(options, defaults) {
-    options = options || {};
-
-    for (var key in defaults) {
-      if (typeof options[key] === 'undefined') {
-        options[key] = defaults[key];
-      }
-    }
-
-    options.alphabet     = options.alphabet.toLocaleLowerCase();
-    options.wordSplitter = options.wordSplitter.toLocaleLowerCase();
-
-    return options;
-  };
-
-  // Prepare the string to simplify translation.
-  // The return value is a multi-dimensional array and should be treated as such.
-  var prepare = function(str, transformer, wordSplitter, letterSplitter) {
-    if (typeof str !== 'string') {
-      throw new TypeError('Invalid value type: ' + typeof str);
-    }
-
-    if (transformer) {
-      str = str[transformer]();
-    }
-
-    var rWordSplitter = new RegExp(wordSplitter + '|[\\n\\r]+', 'gi');
-    var result        = str.trim().split(rWordSplitter);
-
-    each(result, function(word, i) {
-      result[i] = word.split(letterSplitter);
-    });
-
-    return result;
-  };
-
-  // Transform a string in to title case.
-  var toTitleCase = function(str) {
-    return str[0].toLocaleUpperCase() + str.substring(1).toLocaleLowerCase();
-  };
 
   // Alphabets
   // ---------
@@ -226,6 +116,114 @@
     }
   };
 
+  // Private functions
+  // -----------------
+
+  // Iterator over a given `object`.
+  // If `object` is an array, yield each element in turn to an `iterator` function; otherwise do so for the key/value
+  // mapping of the hash.
+  function each(object, iterator) {
+    if (!object) {
+      return object;
+    }
+
+    var key;
+    var index;
+    var length = object.length;
+
+    if (length === +length) {
+      for (index = 0; index < length; index++) {
+        iterator(object[index], index, object);
+      }
+    } else {
+      for (key in object) {
+        if (object.hasOwnProperty(key)) {
+          iterator(key, object[key], object);
+        }
+      }
+    }
+
+    return object;
+  }
+
+  // Return the character mapped to the specified `phonetic` from the alphabet with the given `name` where possible.
+  // If the named alphabet does not contain a mapping for the phonetic but has a fallback alphabet, that alphabet will
+  // be checked.
+  function getAlphabetCharacter(name, phonetic) {
+    var alphabet = alphabets[name];
+    var character;
+
+    if (alphabet) {
+      each(alphabet.characters, function(ch, ph) {
+        if (ph === phonetic) {
+          character = ch;
+        }
+      });
+
+      if (typeof character === 'undefined' && typeof alphabet.fallback !== 'undefined') {
+        character = getAlphabetCharacter(alphabet.fallback, phonetic);
+      }
+    }
+
+    return character;
+  }
+
+  // Return the phonetic mapped to the specified `character` from the alphabet with the given `name` where possible.
+  // If the named alphabet does not contain a mapping for the character but has a fallback alphabet, that alphabet will
+  // be checked.
+  function getAlphabetPhonetic(name, character) {
+    var alphabet = alphabets[name];
+    var phonetic = alphabet.characters[character];
+
+    if (typeof phonetic === 'undefined' && alphabet && typeof alphabet.fallback !== 'undefined') {
+      phonetic = getAlphabetPhonetic(alphabet.fallback, character);
+    }
+
+    return phonetic;
+  }
+
+  // Return the given `options` with all of the `defaults` applied.
+  function getOptions(options, defaults) {
+    options = options || {};
+
+    for (var key in defaults) {
+      if (typeof options[key] === 'undefined') {
+        options[key] = defaults[key];
+      }
+    }
+
+    options.alphabet = options.alphabet.toLocaleLowerCase();
+    options.wordSplitter = options.wordSplitter.toLocaleLowerCase();
+
+    return options;
+  }
+
+  // Prepare the string to simplify translation.
+  // The return value is a multi-dimensional array and should be treated as such.
+  function prepare(str, transformer, wordSplitter, letterSplitter) {
+    if (typeof str !== 'string') {
+      throw new TypeError('Invalid value type: ' + typeof str);
+    }
+
+    if (transformer) {
+      str = str[transformer]();
+    }
+
+    var rWordSplitter = new RegExp(wordSplitter + '|[\\n\\r]+', 'gi');
+    var result = str.trim().split(rWordSplitter);
+
+    each(result, function(word, i) {
+      result[i] = word.split(letterSplitter);
+    });
+
+    return result;
+  }
+
+  // Transform a string in to title case.
+  function toTitleCase(str) {
+    return str[0].toLocaleUpperCase() + str.substring(1).toLocaleLowerCase();
+  }
+
   // Constants
   // ---------
 
@@ -240,9 +238,9 @@
 
   // Default values to be used if no options are specified or are incomplete.
   phony.defaults = {
-    alphabet:       'itu',
+    alphabet: 'itu',
     letterSplitter: ' ',
-    wordSplitter:   'space'
+    wordSplitter: 'space'
   };
 
   // Primary functions
@@ -257,7 +255,7 @@
     options = getOptions(options, phony.defaults);
 
     var result = '';
-    var value  = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
+    var value = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
 
     // Ensure message was prepared successfully and that a valid alphabet was specified.
     if (!value || !alphabets[options.alphabet]) {
@@ -293,9 +291,9 @@
     options = getOptions(options, phony.defaults);
 
     var letterSplitter = options.letterSplitter;
-    var result         = '';
-    var value          = prepare(message, 'toLocaleUpperCase', '\\s+', '');
-    var wordSplitter   = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
+    var result = '';
+    var value = prepare(message, 'toLocaleUpperCase', '\\s+', '');
+    var wordSplitter = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
 
     // Ensure message was prepared successfully and that a valid alphabet was specified.
     if (!value || !alphabets[options.alphabet]) {
@@ -341,5 +339,4 @@
   };
 
   return phony;
-
 }));

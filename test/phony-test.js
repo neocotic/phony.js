@@ -4,22 +4,20 @@
 var expect = require('expect.js');
 var fs = require('fs');
 var path = require('path');
+var q = require('q');
 
 // Load internal dependencies.
 var phony = require('../phony');
 
+// Regular expression used to find and replace EOL characters.
+var rEOL = /[\n\r]+/g;
+
 // Load the contents of a text fixture asynchronously.
-var loadFixture = function(filePath, callback) {
+function loadFixture(filePath) {
   filePath = path.join('test', 'fixtures', filePath);
 
-  fs.readFile(filePath, {encoding: 'utf8'}, function(error, data) {
-    if (error) {
-      throw error;
-    } else {
-      callback(data);
-    }
-  });
-};
+  return q.nfcall(fs.readFile, filePath, {encoding: 'utf8'});
+}
 
 // Run test suite.
 describe('phony', function() {
@@ -157,13 +155,11 @@ describe('phony', function() {
         'Nadazero Dash Novenine'
       ].join(' Space '), options)).to.be('AJZ 0-9');
 
-      loadFixture('ansi.txt', function(source) {
-        loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('ansi.txt'), loadFixture('characters.txt')], function(source, target) {
+        expect(phony.from(source, options)).to.be(target.replace(rEOL, ' '));
+      })
+      .then(done)
+      .done();
     });
 
     it('should translate using "faa" alphabet correctly', function(done) {
@@ -174,13 +170,11 @@ describe('phony', function() {
         'Zero Dash Nine'
       ].join(' Space '), options)).to.be('AJZ 0-9');
 
-      loadFixture('faa.txt', function(source) {
-        loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('faa.txt'), loadFixture('characters.txt')], function(source, target) {
+        expect(phony.from(source, options)).to.be(target.replace(rEOL, ' '));
+      })
+      .then(done)
+      .done();
     });
 
     it('should translate using "icao" alphabet correctly', function(done) {
@@ -191,13 +185,11 @@ describe('phony', function() {
         'Zero Dash Niner'
       ].join(' Space '), options)).to.be('AJZ 0-9');
 
-      loadFixture('icao.txt', function(source) {
-        loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('icao.txt'), loadFixture('characters.txt')], function(source, target) {
+        expect(phony.from(source, options)).to.be(target.replace(rEOL, ' '));
+      })
+      .then(done)
+      .done();
     });
 
     it('should translate using "itu" alphabet correctly', function(done) {
@@ -208,13 +200,11 @@ describe('phony', function() {
         'Nadazero Dash Novenine'
       ].join(' Space '), options)).to.be('AJZ 0-9');
 
-      loadFixture('itu.txt', function(source) {
-        loadFixture('characters.txt', function(target) {
-          expect(phony.from(source, options)).to.be(target.replace(/[\n\r]+/g, ' '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('itu.txt'), loadFixture('characters.txt')], function(source, target) {
+        expect(phony.from(source, options)).to.be(target.replace(rEOL, ' '));
+      })
+      .then(done)
+      .done();
     });
   });
 
@@ -269,13 +259,11 @@ describe('phony', function() {
         'Nadazero Dash Novenine'
       ].join(' Space '));
 
-      loadFixture('characters.txt', function(source) {
-        loadFixture('ansi.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('characters.txt'), loadFixture('ansi.txt')], function(source, target) {
+        expect(phony.to(source, options)).to.be(target.replace(rEOL, ' Space '));
+      })
+      .then(done)
+      .done();
     });
 
     it('should translate using "faa" alphabet correctly', function(done) {
@@ -286,13 +274,11 @@ describe('phony', function() {
         'Zero Dash Nine'
       ].join(' Space '));
 
-      loadFixture('characters.txt', function(source) {
-        loadFixture('faa.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('characters.txt'), loadFixture('faa.txt')], function(source, target) {
+        expect(phony.to(source, options)).to.be(target.replace(rEOL, ' Space '));
+      })
+      .then(done)
+      .done();
     });
 
     it('should translate using "icao" alphabet correctly', function(done) {
@@ -303,13 +289,11 @@ describe('phony', function() {
         'Zero Dash Niner'
       ].join(' Space '));
 
-      loadFixture('characters.txt', function(source) {
-        loadFixture('icao.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('characters.txt'), loadFixture('icao.txt')], function(source, target) {
+        expect(phony.to(source, options)).to.be(target.replace(rEOL, ' Space '));
+      })
+      .then(done)
+      .done();
     });
 
     it('should translate using "itu" alphabet correctly', function(done) {
@@ -320,13 +304,11 @@ describe('phony', function() {
         'Nadazero Dash Novenine'
       ].join(' Space '));
 
-      loadFixture('characters.txt', function(source) {
-        loadFixture('itu.txt', function(target) {
-          expect(phony.to(source, options)).to.be(target.replace(/[\n\r]+/g, ' Space '));
-
-          done();
-        });
-      });
+      q.spread([loadFixture('characters.txt'), loadFixture('itu.txt')], function(source, target) {
+        expect(phony.to(source, options)).to.be(target.replace(rEOL, ' Space '));
+      })
+      .then(done)
+      .done();
     });
   });
 
@@ -338,27 +320,21 @@ describe('phony', function() {
 
   describe('.VERSION', function() {
     it('should match version in bower.json', function(done) {
-      fs.readFile('bower.json', {encoding: 'utf8'}, function(error, data) {
-        if (error) {
-          throw error;
-        } else {
-          expect(phony.VERSION).to.be(JSON.parse(data).version);
-
-          done();
-        }
-      });
+      q.nfcall(fs.readFile, 'bower.json', {encoding: 'utf8'})
+      .then(function(data) {
+        expect(phony.VERSION).to.be(JSON.parse(data).version);
+      })
+      .then(done)
+      .done();
     });
 
     it('should match version in package.json', function(done) {
-      fs.readFile('package.json', {encoding: 'utf8'}, function(error, data) {
-        if (error) {
-          throw error;
-        } else {
-          expect(phony.VERSION).to.be(JSON.parse(data).version);
-
-          done();
-        }
-      });
+      q.nfcall(fs.readFile, 'package.json', {encoding: 'utf8'})
+      .then(function(data) {
+        expect(phony.VERSION).to.be(JSON.parse(data).version);
+      })
+      .then(done)
+      .done();
     });
   });
 });
