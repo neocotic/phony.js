@@ -2,8 +2,8 @@
  * Library for translating to/from the phonetic alphabet.
  *
  * @module phony
- * @version 1.1.0
- * @copyright Alasdair Mercer 2014
+ * @version 1.2.0
+ * @copyright Alasdair Mercer 2015
  * @license MIT
  */
 (function(factory) {
@@ -238,7 +238,7 @@
    * @constant
    * @type {String}
    */
-  phony.VERSION = '1.1.0';
+  phony.VERSION = '1.2.0';
 
   /**
    * The configurations for the initially supported phonetic alphabets.

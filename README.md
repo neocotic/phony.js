@@ -139,7 +139,7 @@ The current version of `phony`.
 
 ``` javascript
 phony.VERSION;
-//=> "1.1.0"
+//=> "1.2.0"
 ```
 
 ## Bugs
@@ -156,7 +156,7 @@ A list of [phony.js][0] contributors can be found in [AUTHORS.md][7].
 
 ## License
 
-Copyright (c) 2014 Alasdair Mercer
+Copyright (c) 2015 Alasdair Mercer
 
 See [LICENSE.md][9] for more information on our MIT license.
 
