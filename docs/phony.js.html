@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: phony.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: phony.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Library for translating to/from the phonetic alphabet.
+ *
+ * @module phony
+ * @version 1.2.0
+ * @copyright Alasdair Mercer 2015
+ * @license MIT
+ */
+(function(factory) {
+  'use strict';
+
+  /**
+   * The root object that has been determined for the current environment (browser, server, &lt;code>WebWorker&lt;/code>).
+   *
+   * @access private
+   * @type {*}
+   */
+  var root = (typeof self === 'object' &amp;&amp; self.self === self &amp;&amp; self) ||
+      (typeof global === 'object' &amp;&amp; global.global === global &amp;&amp; global);
+
+  if (typeof define === 'function' &amp;&amp; define.amd) {
+    // Defines for AMD but also exports to root for those expecting global phony
+    define(function() {
+      root.phony = factory(root);
+
+      return root.phony;
+    });
+  } else if (typeof module !== 'undefined' &amp;&amp; module.exports) {
+    // Supports Node.js and the CommonJS patterns
+    exports = module.exports = factory(root);
+  } else {
+    // Falls back on browser support
+    root.phony = factory(root);
+  }
+}(function(root) {
+  'use strict';
+
+  /**
+   * A phonetic alphabet configuration.
+   *
+   * @typedef {Object} PhoneticAlphabet
+   * @property {Object.&lt;String, String>} characters - The map of characters and their phonetic counterparts.
+   * @property {String} [fallback] - The name of the fallback alphabet.
+   */
+
+  /**
+   * Options to be passed to the primary {@linkcode phony} methods.
+   *
+   * @typedef {Object} PhonyOptions
+   * @property {String} [alphabet="itu"] - The default name of the alphabet to be used for the translation.
+   * @property {String} [letterSplitter=" "] - The default string to be used to split alphabetic letters (may be passed
+   * to &lt;code>RegExp&lt;/code> constructor).
+   * @property {String} [wordSplitter="space"] - The default string to be used to split words (may be passed to
+   * &lt;code>RegExp&lt;/code> constructor).
+   */
+
+  /**
+   * The main &lt;code>phony&lt;/code> object to be exported.
+   *
+   * @access public
+   * @type {Object}
+   * @alias module:phony
+   */
+  var phony = {};
+
+  /**
+   * The previous value of the &lt;code>phony&lt;/code> variable.
+   *
+   * @access private
+   * @type {*}
+   */
+  var previousPhony = root.phony;
+
+  /**
+   * Iterates over a given &lt;code>object&lt;/code>.
+   * &lt;p/>
+   * If &lt;code>object&lt;/code> is an array, each element is yielded in turn to the specified &lt;code>iterator&lt;/code>
+   * function; otherwise this is done for the key/value mapping of the hash.
+   *
+   * @param {Array|Object} [object] - the object or array to be iterated over
+   * @param {Function} iterator - the iterator function to be passed index/element if &lt;code>object&lt;/code> is an array
+   * or key/value if it is a hash
+   * @returns {Array|Object} The specified &lt;code>object&lt;/code>.
+   * @access private
+   */
+  function each(object, iterator) {
+    if (!object) {
+      return object;
+    }
+
+    var key;
+    var index;
+    var length = object.length;
+
+    if (length === +length) {
+      for (index = 0; index &lt; length; index++) {
+        iterator(object[index], index, object);
+      }
+    } else {
+      for (key in object) {
+        if (object.hasOwnProperty(key)) {
+          iterator(key, object[key], object);
+        }
+      }
+    }
+
+    return object;
+  }
+
+  /**
+   * Returns the character mapped to the specified &lt;code>phonetic&lt;/code> from the alphabet with the given
+   * &lt;code>name&lt;/code>, where possible.
+   * &lt;p/>
+   * If the named alphabet does not contain a mapping for &lt;code>phonetic&lt;/code> but has a fallback alphabet configured,
+   * then that alphabet will be checked.
+   *
+   * @param {String} name - the name of the alphabet
+   * @param {String} phonetic - the phonetic string whose alphabet character mapping is to be returned
+   * @returns {String} The character mapped to &lt;code>phonetic&lt;/code> for the named alphabet or it's configured
+   * fallback.
+   * @access private
+   */
+  function getAlphabetCharacter(name, phonetic) {
+    var alphabet = phony.alphabets[name];
+    var character;
+
+    if (alphabet) {
+      each(alphabet.characters, function(ch, ph) {
+        if (ph === phonetic) {
+          character = ch;
+        }
+      });
+
+      if (typeof character === 'undefined' &amp;&amp; typeof alphabet.fallback !== 'undefined') {
+        character = getAlphabetCharacter(alphabet.fallback, phonetic);
+      }
+    }
+
+    return character;
+  }
+
+  /**
+   * Returns the phonetic mapped to the specified &lt;code>character&lt;/code> from the alphabet with the given
+   * &lt;code>name&lt;/code>, where possible.
+   * &lt;p/>
+   * If the named alphabet does not contain a mapping for &lt;code>character&lt;/code> but has a fallback alphabet
+   * configured, then that alphabet will be checked.
+   *
+   * @param {String} name - the name of the alphabet
+   * @param {String} character - the character whose alphabet phonetic mapping is to be returned
+   * @returns {String} The phonetic mapped to &lt;code>character&lt;/code> for the named alphabet or it's configured
+   * fallback.
+   * @access private
+   */
+  function getAlphabetPhonetic(name, character) {
+    var alphabet = phony.alphabets[name];
+    var phonetic = alphabet.characters &amp;&amp; alphabet.characters[character];
+
+    if (typeof phonetic === 'undefined' &amp;&amp; alphabet &amp;&amp; typeof alphabet.fallback !== 'undefined') {
+      phonetic = getAlphabetPhonetic(alphabet.fallback, character);
+    }
+
+    return phonetic;
+  }
+
+  /**
+   * Returns the given &lt;code>options&lt;/code> with all of the &lt;code>defaults&lt;/code> applied.
+   * &lt;p/>
+   * This function &lt;i>will change&lt;/i> the specified &lt;code>options&lt;/code>.
+   *
+   * @param {PhonyOptions} [options={}] - the options to be extended
+   * @param {PhonyOptions} defaults - the default options
+   * @returns {PhonyOptions} The specified &lt;code>options&lt;/code> with modifications.
+   * @access private
+   */
+  function getOptions(options, defaults) {
+    options = options || {};
+
+    for (var key in defaults) {
+      if (typeof options[key] === 'undefined') {
+        options[key] = defaults[key];
+      }
+    }
+
+    options.alphabet = options.alphabet.toLocaleLowerCase();
+    options.wordSplitter = options.wordSplitter.toLocaleLowerCase();
+
+    return options;
+  }
+
+  /**
+   * Prepares a given string to simplify translation.
+   *
+   * @param {String} str - the string to prepare
+   * @param {String} [transformer] - the name of a &lt;code>String.prototype&lt;/code> method to be used to transform
+   * &lt;code>str&lt;/code> prior to preparation
+   * @param {String} wordSplitter - the string used to split words (will be passed to &lt;code>RegExp&lt;/code> constructor)
+   * @param {String} letterSplitter - the string used to split alphabetic letters
+   * @returns {Array.&lt;Array.&lt;String>>} A multi-dimensional array of words and their alphabetic letters contained
+   * within.
+   * @access private
+   */
+  function prepare(str, transformer, wordSplitter, letterSplitter) {
+    if (typeof str !== 'string') {
+      throw new TypeError('Invalid value type: ' + typeof str);
+    }
+
+    if (transformer &amp;&amp; typeof str[transformer] === 'function') {
+      str = str[transformer]();
+    }
+
+    var rWordSplitter = new RegExp(wordSplitter + '|[\\n\\r]+', 'gi');
+    var result = str.trim().split(rWordSplitter);
+
+    each(result, function(word, i) {
+      result[i] = word.split(letterSplitter);
+    });
+
+    return result;
+  }
+
+  /**
+   * Transforms a given string in to title case.
+   *
+   * @param {String} str - the string to be transformed
+   * @returns {String} &lt;code>str&lt;/code> in title case form.
+   * @access private
+   */
+  function toTitleCase(str) {
+    return str[0].toLocaleUpperCase() + str.substring(1).toLocaleLowerCase();
+  }
+
+  /**
+   * The current version of {@linkcode phony}.
+   *
+   * @access public
+   * @static
+   * @constant
+   * @type {String}
+   */
+  phony.VERSION = '1.2.0';
+
+  /**
+   * The configurations for the initially supported phonetic alphabets.
+   *
+   * @access public
+   * @static
+   * @type {Object.&lt;String, PhoneticAlphabet>}
+   * @property {PhoneticAlphabet} ansi - The American National Standards Institute (ANSI) phonetic alphabet
+   * configuration.
+   * @property {PhoneticAlphabet} faa - The Federal Aviation Administration (FAA) phonetic alphabet configuration.
+   * @property {PhoneticAlphabet} icao - The International Civil Aviation Organization (ICAO) phonetic alphabet
+   * configuration.
+   * @property {PhoneticAlphabet} itu - The International Telecommunication Union (ITU) phonetic alphabet
+   * configuration.
+   */
+  phony.alphabets = {
+    ansi: {
+      fallback: 'itu',
+      characters: {
+        'A': 'alpha',
+        'J': 'juliet'
+      }
+    },
+    faa: {
+      fallback: 'itu',
+      characters: {
+        '0': 'zero',
+        '1': 'one',
+        '2': 'two',
+        '3': 'three',
+        '4': 'four',
+        '5': 'five',
+        '6': 'six',
+        '7': 'seven',
+        '8': 'eight',
+        '9': 'nine'
+      }
+    },
+    icao: {
+      fallback: 'faa',
+      characters: {
+        '9': 'niner'
+      }
+    },
+    itu: {
+      characters: {
+        'A': 'alfa',
+        'B': 'bravo',
+        'C': 'charlie',
+        'D': 'delta',
+        'E': 'echo',
+        'F': 'foxtrot',
+        'G': 'golf',
+        'H': 'hotel',
+        'I': 'india',
+        'J': 'juliett',
+        'K': 'kilo',
+        'L': 'lima',
+        'M': 'mike',
+        'N': 'november',
+        'O': 'oscar',
+        'P': 'papa',
+        'Q': 'quebec',
+        'R': 'romeo',
+        'S': 'sierra',
+        'T': 'tango',
+        'U': 'uniform',
+        'V': 'victor',
+        'W': 'whiskey',
+        'X': 'x-ray',
+        'Y': 'yankee',
+        'Z': 'zulu',
+        '0': 'nadazero',
+        '1': 'unaone',
+        '2': 'bissotwo',
+        '3': 'terrathree',
+        '4': 'kartefour',
+        '5': 'pantafive',
+        '6': 'soxisix',
+        '7': 'setteseven',
+        '8': 'oktoeight',
+        '9': 'novenine',
+        '.': 'stop',
+        '-': 'dash'
+      }
+    }
+  };
+
+  /**
+   * The default values to be used when options are not specified or incomplete.
+   *
+   * @access public
+   * @static
+   * @type {PhonyOptions}
+   */
+  phony.defaults = {
+    alphabet: 'itu',
+    letterSplitter: ' ',
+    wordSplitter: 'space'
+  };
+
+  /**
+   * Translates the &lt;code>message&lt;/code> provided &lt;i>from&lt;/i> the phonetic alphabet.
+   * &lt;p/>
+   * The message may not be translated correctly if the some of the options used to translate the message originally
+   * are not the same as those in &lt;code>options&lt;/code>.
+   *
+   * @param {String} [message=""] - the string to be translated from the phonetic alphabet
+   * @param {PhonyOptions} [options={}] - the options to be used
+   * @returns {String} The translation from the specified phonetic alphabet &lt;code>message&lt;/code>.
+   * @access public
+   * @static
+   */
+  phony.from = function(message, options) {
+    message = message || '';
+    options = getOptions(options, phony.defaults);
+
+    var result = '';
+    var value = prepare(message, 'toLocaleLowerCase', options.wordSplitter, options.letterSplitter);
+
+    // Ensures message was prepared successfully and that a valid alphabet was specified
+    if (!value || !phony.alphabets[options.alphabet]) {
+      return result;
+    }
+
+    // Iterates over each word
+    each(value, function(word, i) {
+      // Inserts space between each word
+      if (i > 0) {
+        result += ' ';
+      }
+
+      // Iterates over each phonetic representation in the word
+      each(word, function(phonetic) {
+        // Reverse engineers character from phonetic representation
+        var character = getAlphabetCharacter(options.alphabet, phonetic);
+
+        // Checks if character is supported
+        if (typeof character === 'string') {
+          result += character;
+        }
+      });
+    });
+
+    return result;
+  };
+
+  /**
+   * Translates the &lt;code>message&lt;/code> provided &lt;i>to&lt;/i> the phonetic alphabet.
+   *
+   * @param {String} [message=""] - the string to be translated to the phonetic alphabet
+   * @param {PhonyOptions} [options={}] - the options to be used
+   * @returns {String} The phonetic alphabet translation of the specified &lt;code>message&lt;/code>.
+   * @access public
+   * @static
+   */
+  phony.to = function(message, options) {
+    message = message || '';
+    options = getOptions(options, phony.defaults);
+
+    var letterSplitter = options.letterSplitter;
+    var result = '';
+    var value = prepare(message, 'toLocaleUpperCase', '\\s+', '');
+    var wordSplitter = letterSplitter + toTitleCase(options.wordSplitter) + letterSplitter;
+
+    // Ensures message was prepared successfully and that a valid alphabet was specified
+    if (!value || !phony.alphabets[options.alphabet]) {
+      return result;
+    }
+
+    // Iterates over each word
+    each(value, function(word, i) {
+      // Inserts wordSplitter option between each word
+      if (i > 0) {
+        result += wordSplitter;
+      }
+
+      // Iterates over each character in the word
+      each(word, function(character, j) {
+        // Reverse engineers character from phonetic representation
+        var phonetic = getAlphabetPhonetic(options.alphabet, character);
+
+        // Checks if phonetic representation is supported
+        if (typeof phonetic === 'string') {
+          // Inserts letterSplitter option between each character
+          if (j > 0) {
+            result += letterSplitter;
+          }
+
+          result += toTitleCase(phonetic);
+        }
+      });
+    });
+
+    return result;
+  };
+
+  /**
+   * Runs phony in &lt;i>no conflict&lt;/i> mode, returning the &lt;code>phony&lt;/code> global variable to it's previous owner, if
+   * any.
+   *
+   * @returns {Object} A reference to this {@linkcode phony}.
+   * @access public
+   * @static
+   */
+  phony.noConflict = function() {
+    root.phony = previousPhony;
+
+    return this;
+  };
+
+  return phony;
+}));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-phony.html">phony</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Sat Jun 06 2015 18:44:04 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

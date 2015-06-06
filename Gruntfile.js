@@ -1,68 +1,57 @@
 module.exports = function(grunt) {
-
   'use strict';
-
-  // Configuration
-  // -------------
 
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
 
-    docco: {
-      all: {
-        options: {
-          output: 'docs'
-        },
-        src: 'phony.js'
+    blanket: {
+      coverage: {
+        src: ['src'],
+        dest: 'coverage/src'
       }
     },
 
-    jshint: {
-      main: [
-        'Gruntfile.js',
-        'phony.js'
-      ],
-      test: {
-        files: {
-          src: ['test/**/*.js']
-        },
-        options: {
-          globals:      {
-            after:      true,
-            afterEach:  true,
-            before:     true,
-            beforeEach: true,
-            describe:   true,
-            it:         true
-          },
-          globalstrict: true,
-          strict:       false
-        }
+    clean: {
+      coverage: ['coverage'],
+      dist: ['dist', 'docs']
+    },
+
+    copy: {
+      coverage: {
+        expand: true,
+        src: ['test/**'],
+        dest: 'coverage/'
       },
+      dist: {
+        src: ['src/phony.js'],
+        dest: 'dist/phony.js'
+      }
+    },
+
+    coveralls: {
       options: {
-        boss:      true,
-        browser:   true,
-        camelcase: true,
-        curly:     true,
-        devel:     false,
-        eqeqeq:    true,
-        expr:      true,
-        globals:   {
-          define: true
+        force: true
+      },
+      coverage: {
+        src: ['coverage/results.info']
+      }
+    },
+
+    eslint: {
+      target: [
+        'Gruntfile.js',
+        'src/**/*.js',
+        'test/**/*.js'
+      ]
+    },
+
+    jsdoc: {
+      dist: {
+        options: {
+          destination: 'docs'
         },
-        immed:     true,
-        latedef:   true,
-        laxcomma:  false,
-        maxlen:    120,
-        newcap:    true,
-        noarg:     true,
-        node:      true,
-        nonew:     true,
-        quotmark:  'single',
-        strict:    true,
-        undef:     true,
-        unused:    true
+        src: ['src/**/*.js']
       }
     },
 
@@ -72,47 +61,68 @@ module.exports = function(grunt) {
           reporter: 'spec'
         },
         src: ['test/**/*-test.js']
+      },
+      coverage: {
+        options: {
+          captureFile: 'coverage/results.html',
+          quiet: true,
+          reporter: 'html-cov'
+        },
+        src: ['coverage/test/**/*-test.js']
+      },
+      lcov: {
+        options: {
+          captureFile: 'coverage/lcov.info',
+          quiet: true,
+          reporter: 'mocha-lcov-reporter'
+        },
+        src: ['coverage/test/**/*-test.js']
+      },
+      'travis-cov': {
+        options: {
+          reporter: 'travis-cov'
+        },
+        src: ['coverage/test/**/*-test.js']
       }
     },
 
     uglify: {
-      all: {
+      dist: {
         files: {
-          'phony.min.js': 'phony.js'
+          'dist/phony.min.js': 'dist/phony.js'
         },
         options: {
-          banner: (
-            '/*! phony v<%= pkg.version %> | (c) <%= grunt.template.today("yyyy") %>' +
-            ' <%= pkg.author.name %> | <%= pkg.licenses[0].type %> License\n' +
+          banner: [
+            '/*! phony v<%= pkg.version %> | (c) <%= grunt.template.today("yyyy") %>',
+            ' <%= pkg.author.name %> | <%= pkg.licenses[0].type %> License\n',
             '*/'
-          ),
+          ].join(''),
           report: 'min',
           sourceMap: true,
-          sourceMapName: 'phony.min.map'
+          sourceMapName: 'dist/phony.min.map'
         }
       }
     },
 
     watch: {
-      all: {
-        files: '**/*.js',
+      test: {
+        files: 'src/**/*.js',
         tasks: ['test']
       }
     }
 
   });
 
-  // Tasks
-  // -----
-
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-blanket');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-docco');
+  grunt.loadNpmTasks('grunt-eslint');
+  grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-mocha-test');
 
-  grunt.registerTask('default', [ 'test' ]);
-  grunt.registerTask('dist', [ 'test', 'uglify', 'docco' ]);
-  grunt.registerTask('test', [ 'jshint', 'mochaTest' ]);
-
+  grunt.registerTask('default', ['test']);
+  grunt.registerTask('dist', ['test', 'clean:dist', 'copy:dist', 'uglify', 'jsdoc']);
+  grunt.registerTask('test', ['eslint', 'clean:coverage', 'blanket', 'copy:coverage', 'mochaTest']);
 };
