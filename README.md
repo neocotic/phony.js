@@ -14,7 +14,8 @@
 extensible characters.
 
 [![Build Status](https://travis-ci.org/neocotic/phony.js.svg?branch=develop)][1]
-[![Coverage Status](https://coveralls.io/repos/neocotic/phony.js/badge.svg)][10]
+[![Code Climate](https://codeclimate.com/github/neocotic/phony.js/badges/gpa.svg)][10]
+[![Test Coverage](https://codeclimate.com/github/neocotic/phony.js/badges/coverage.svg)][11]
 [![Dependency Status](https://gemnasium.com/neocotic/phony.js.svg)][4]
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)][5]
 
@@ -169,4 +170,5 @@ See [LICENSE.md][9] for more information on our MIT license.
 [7]: https://github.com/neocotic/phony.js/blob/master/AUTHORS.md
 [8]: https://github.com/neocotic/phony.js/blob/master/CONTRIBUTING.md
 [9]: https://github.com/neocotic/phony.js/blob/master/LICENSE.md
-[10]: https://coveralls.io/r/neocotic/phony.js
+[10]: https://codeclimate.com/github/neocotic/phony.js
+[11]: https://codeclimate.com/github/neocotic/phony.js/coverage

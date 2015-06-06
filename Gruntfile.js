@@ -72,7 +72,7 @@ module.exports = function(grunt) {
       },
       lcov: {
         options: {
-          captureFile: 'coverage/results.info',
+          captureFile: 'coverage/lcov.info',
           quiet: true,
           reporter: 'mocha-lcov-reporter'
         },
@@ -118,7 +118,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-coveralls');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-mocha-test');
