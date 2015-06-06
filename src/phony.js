@@ -1,32 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Source: phony.js</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-
-<body>
-
-<div id="main">
-
-    <h1 class="page-title">Source: phony.js</h1>
-
-    
-
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
+/**
  * Library for translating to/from the phonetic alphabet.
  *
  * @module phony
@@ -38,22 +10,22 @@
   'use strict';
 
   /**
-   * The root object that has been determined for the current environment (browser, server, &lt;code>WebWorker&lt;/code>).
+   * The root object that has been determined for the current environment (browser, server, <code>WebWorker</code>).
    *
    * @access private
    * @type {*}
    */
-  var root = (typeof self === 'object' &amp;&amp; self.self === self &amp;&amp; self) ||
-      (typeof global === 'object' &amp;&amp; global.global === global &amp;&amp; global);
+  var root = (typeof self === 'object' && self.self === self && self) ||
+      (typeof global === 'object' && global.global === global && global);
 
-  if (typeof define === 'function' &amp;&amp; define.amd) {
+  if (typeof define === 'function' && define.amd) {
     // Defines for AMD but also exports to root for those expecting global phony
     define(function() {
       root.phony = factory(root);
 
       return root.phony;
     });
-  } else if (typeof module !== 'undefined' &amp;&amp; module.exports) {
+  } else if (typeof module !== 'undefined' && module.exports) {
     // Supports Node.js and the CommonJS patterns
     exports = module.exports = factory(root);
   } else {
@@ -67,7 +39,7 @@
    * A phonetic alphabet configuration.
    *
    * @typedef {Object} PhoneticAlphabet
-   * @property {Object.&lt;String, String>} characters - The map of characters and their phonetic counterparts.
+   * @property {Object.<String, String>} characters - The map of characters and their phonetic counterparts.
    * @property {String} [fallback] - The name of the fallback alphabet.
    */
 
@@ -77,13 +49,13 @@
    * @typedef {Object} PhonyOptions
    * @property {String} [alphabet="itu"] - The default name of the alphabet to be used for the translation.
    * @property {String} [letterSplitter=" "] - The default string to be used to split alphabetic letters (may be passed
-   * to &lt;code>RegExp&lt;/code> constructor).
+   * to <code>RegExp</code> constructor).
    * @property {String} [wordSplitter="space"] - The default string to be used to split words (may be passed to
-   * &lt;code>RegExp&lt;/code> constructor).
+   * <code>RegExp</code> constructor).
    */
 
   /**
-   * The main &lt;code>phony&lt;/code> object to be exported.
+   * The main <code>phony</code> object to be exported.
    *
    * @access public
    * @type {Object}
@@ -92,7 +64,7 @@
   var phony = {};
 
   /**
-   * The previous value of the &lt;code>phony&lt;/code> variable.
+   * The previous value of the <code>phony</code> variable.
    *
    * @access private
    * @type {*}
@@ -100,15 +72,15 @@
   var previousPhony = root.phony;
 
   /**
-   * Iterates over a given &lt;code>object&lt;/code>.
-   * &lt;p/>
-   * If &lt;code>object&lt;/code> is an array, each element is yielded in turn to the specified &lt;code>iterator&lt;/code>
+   * Iterates over a given <code>object</code>.
+   * <p/>
+   * If <code>object</code> is an array, each element is yielded in turn to the specified <code>iterator</code>
    * function; otherwise this is done for the key/value mapping of the hash.
    *
    * @param {Array|Object} [object] - the object or array to be iterated over
-   * @param {Function} iterator - the iterator function to be passed index/element if &lt;code>object&lt;/code> is an array
+   * @param {Function} iterator - the iterator function to be passed index/element if <code>object</code> is an array
    * or key/value if it is a hash
-   * @returns {Array|Object} The specified &lt;code>object&lt;/code>.
+   * @returns {Array|Object} The specified <code>object</code>.
    * @access private
    */
   function each(object, iterator) {
@@ -121,7 +93,7 @@
     var length = object.length;
 
     if (length === +length) {
-      for (index = 0; index &lt; length; index++) {
+      for (index = 0; index < length; index++) {
         iterator(object[index], index, object);
       }
     } else {
@@ -136,15 +108,15 @@
   }
 
   /**
-   * Returns the character mapped to the specified &lt;code>phonetic&lt;/code> from the alphabet with the given
-   * &lt;code>name&lt;/code>, where possible.
-   * &lt;p/>
-   * If the named alphabet does not contain a mapping for &lt;code>phonetic&lt;/code> but has a fallback alphabet configured,
+   * Returns the character mapped to the specified <code>phonetic</code> from the alphabet with the given
+   * <code>name</code>, where possible.
+   * <p/>
+   * If the named alphabet does not contain a mapping for <code>phonetic</code> but has a fallback alphabet configured,
    * then that alphabet will be checked.
    *
    * @param {String} name - the name of the alphabet
    * @param {String} phonetic - the phonetic string whose alphabet character mapping is to be returned
-   * @returns {String} The character mapped to &lt;code>phonetic&lt;/code> for the named alphabet or it's configured
+   * @returns {String} The character mapped to <code>phonetic</code> for the named alphabet or it's configured
    * fallback.
    * @access private
    */
@@ -159,7 +131,7 @@
         }
       });
 
-      if (typeof character === 'undefined' &amp;&amp; typeof alphabet.fallback !== 'undefined') {
+      if (typeof character === 'undefined' && typeof alphabet.fallback !== 'undefined') {
         character = getAlphabetCharacter(alphabet.fallback, phonetic);
       }
     }
@@ -168,23 +140,23 @@
   }
 
   /**
-   * Returns the phonetic mapped to the specified &lt;code>character&lt;/code> from the alphabet with the given
-   * &lt;code>name&lt;/code>, where possible.
-   * &lt;p/>
-   * If the named alphabet does not contain a mapping for &lt;code>character&lt;/code> but has a fallback alphabet
+   * Returns the phonetic mapped to the specified <code>character</code> from the alphabet with the given
+   * <code>name</code>, where possible.
+   * <p/>
+   * If the named alphabet does not contain a mapping for <code>character</code> but has a fallback alphabet
    * configured, then that alphabet will be checked.
    *
    * @param {String} name - the name of the alphabet
    * @param {String} character - the character whose alphabet phonetic mapping is to be returned
-   * @returns {String} The phonetic mapped to &lt;code>character&lt;/code> for the named alphabet or it's configured
+   * @returns {String} The phonetic mapped to <code>character</code> for the named alphabet or it's configured
    * fallback.
    * @access private
    */
   function getAlphabetPhonetic(name, character) {
     var alphabet = phony.alphabets[name];
-    var phonetic = alphabet.characters &amp;&amp; alphabet.characters[character];
+    var phonetic = alphabet.characters && alphabet.characters[character];
 
-    if (typeof phonetic === 'undefined' &amp;&amp; alphabet &amp;&amp; typeof alphabet.fallback !== 'undefined') {
+    if (typeof phonetic === 'undefined' && alphabet && typeof alphabet.fallback !== 'undefined') {
       phonetic = getAlphabetPhonetic(alphabet.fallback, character);
     }
 
@@ -192,13 +164,13 @@
   }
 
   /**
-   * Returns the given &lt;code>options&lt;/code> with all of the &lt;code>defaults&lt;/code> applied.
-   * &lt;p/>
-   * This function &lt;i>will change&lt;/i> the specified &lt;code>options&lt;/code>.
+   * Returns the given <code>options</code> with all of the <code>defaults</code> applied.
+   * <p/>
+   * This function <i>will change</i> the specified <code>options</code>.
    *
    * @param {PhonyOptions} [options={}] - the options to be extended
    * @param {PhonyOptions} defaults - the default options
-   * @returns {PhonyOptions} The specified &lt;code>options&lt;/code> with modifications.
+   * @returns {PhonyOptions} The specified <code>options</code> with modifications.
    * @access private
    */
   function getOptions(options, defaults) {
@@ -220,11 +192,11 @@
    * Prepares a given string to simplify translation.
    *
    * @param {String} str - the string to prepare
-   * @param {String} [transformer] - the name of a &lt;code>String.prototype&lt;/code> method to be used to transform
-   * &lt;code>str&lt;/code> prior to preparation
-   * @param {String} wordSplitter - the string used to split words (will be passed to &lt;code>RegExp&lt;/code> constructor)
+   * @param {String} [transformer] - the name of a <code>String.prototype</code> method to be used to transform
+   * <code>str</code> prior to preparation
+   * @param {String} wordSplitter - the string used to split words (will be passed to <code>RegExp</code> constructor)
    * @param {String} letterSplitter - the string used to split alphabetic letters
-   * @returns {Array.&lt;Array.&lt;String>>} A multi-dimensional array of words and their alphabetic letters contained
+   * @returns {Array.<Array.<String>>} A multi-dimensional array of words and their alphabetic letters contained
    * within.
    * @access private
    */
@@ -233,7 +205,7 @@
       throw new TypeError('Invalid value type: ' + typeof str);
     }
 
-    if (transformer &amp;&amp; typeof str[transformer] === 'function') {
+    if (transformer && typeof str[transformer] === 'function') {
       str = str[transformer]();
     }
 
@@ -251,7 +223,7 @@
    * Transforms a given string in to title case.
    *
    * @param {String} str - the string to be transformed
-   * @returns {String} &lt;code>str&lt;/code> in title case form.
+   * @returns {String} <code>str</code> in title case form.
    * @access private
    */
   function toTitleCase(str) {
@@ -273,7 +245,7 @@
    *
    * @access public
    * @static
-   * @type {Object.&lt;String, PhoneticAlphabet>}
+   * @type {Object.<String, PhoneticAlphabet>}
    * @property {PhoneticAlphabet} ansi - The American National Standards Institute (ANSI) phonetic alphabet
    * configuration.
    * @property {PhoneticAlphabet} faa - The Federal Aviation Administration (FAA) phonetic alphabet configuration.
@@ -369,14 +341,14 @@
   };
 
   /**
-   * Translates the &lt;code>message&lt;/code> provided &lt;i>from&lt;/i> the phonetic alphabet.
-   * &lt;p/>
+   * Translates the <code>message</code> provided <i>from</i> the phonetic alphabet.
+   * <p/>
    * The message may not be translated correctly if the some of the options used to translate the message originally
-   * are not the same as those in &lt;code>options&lt;/code>.
+   * are not the same as those in <code>options</code>.
    *
    * @param {String} [message=""] - the string to be translated from the phonetic alphabet
    * @param {PhonyOptions} [options={}] - the options to be used
-   * @returns {String} The translation from the specified phonetic alphabet &lt;code>message&lt;/code>.
+   * @returns {String} The translation from the specified phonetic alphabet <code>message</code>.
    * @access public
    * @static
    */
@@ -415,11 +387,11 @@
   };
 
   /**
-   * Translates the &lt;code>message&lt;/code> provided &lt;i>to&lt;/i> the phonetic alphabet.
+   * Translates the <code>message</code> provided <i>to</i> the phonetic alphabet.
    *
    * @param {String} [message=""] - the string to be translated to the phonetic alphabet
    * @param {PhonyOptions} [options={}] - the options to be used
-   * @returns {String} The phonetic alphabet translation of the specified &lt;code>message&lt;/code>.
+   * @returns {String} The phonetic alphabet translation of the specified <code>message</code>.
    * @access public
    * @static
    */
@@ -465,7 +437,7 @@
   };
 
   /**
-   * Runs phony in &lt;i>no conflict&lt;/i> mode, returning the &lt;code>phony&lt;/code> global variable to it's previous owner, if
+   * Runs phony in <i>no conflict</i> mode, returning the <code>phony</code> global variable to it's previous owner, if
    * any.
    *
    * @returns {Object} A reference to this {@linkcode phony}.
@@ -480,26 +452,3 @@
 
   return phony;
 }));
-</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-phony.html">phony</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Sat Jun 06 2015 14:49:46 GMT+0100 (GMT Daylight Time)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
-</body>
-</html>

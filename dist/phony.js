@@ -154,7 +154,7 @@
    */
   function getAlphabetPhonetic(name, character) {
     var alphabet = phony.alphabets[name];
-    var phonetic = alphabet.characters[character];
+    var phonetic = alphabet.characters && alphabet.characters[character];
 
     if (typeof phonetic === 'undefined' && alphabet && typeof alphabet.fallback !== 'undefined') {
       phonetic = getAlphabetPhonetic(alphabet.fallback, character);
@@ -418,16 +418,16 @@
 
       // Iterates over each character in the word
       each(word, function(character, j) {
-        // Inserts letterSplitter option between each character
-        if (j > 0) {
-          result += letterSplitter;
-        }
-
         // Reverse engineers character from phonetic representation
         var phonetic = getAlphabetPhonetic(options.alphabet, character);
 
         // Checks if phonetic representation is supported
         if (typeof phonetic === 'string') {
+          // Inserts letterSplitter option between each character
+          if (j > 0) {
+            result += letterSplitter;
+          }
+
           result += toTitleCase(phonetic);
         }
       });

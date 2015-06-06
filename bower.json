@@ -27,7 +27,7 @@
     "type": "git",
     "url": "git://github.com/neocotic/phony.js.git"
   },
-  "main": "phony.js",
+  "main": "src/phony.js",
   "ignore": [
     "**/.*",
     "docs",
