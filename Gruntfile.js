@@ -29,6 +29,15 @@ module.exports = function(grunt) {
       }
     },
 
+    coveralls: {
+      options: {
+        force: true
+      },
+      coverage: {
+        src: ['coverage/results.info']
+      }
+    },
+
     eslint: {
       target: [
         'Gruntfile.js',
@@ -58,6 +67,14 @@ module.exports = function(grunt) {
           captureFile: 'coverage/results.html',
           quiet: true,
           reporter: 'html-cov'
+        },
+        src: ['coverage/test/**/*-test.js']
+      },
+      lcov: {
+        options: {
+          captureFile: 'coverage/results.info',
+          quiet: true,
+          reporter: 'mocha-lcov-reporter'
         },
         src: ['coverage/test/**/*-test.js']
       },
@@ -101,6 +118,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-coveralls');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-mocha-test');
