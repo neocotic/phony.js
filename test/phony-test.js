@@ -5,7 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var q = require('q');
 
-var phony = require('../phony');
+var phony = require('../src/phony');
 
 /**
  * The regular expression used to find and replace EOL characters.
@@ -30,15 +30,15 @@ function loadFixture(filePath) {
 }
 
 describe('phony', function() {
+  afterEach(function() {
+    delete phony.alphabets.foo;
+  });
+
   it('should be exported as an object', function() {
     expect(phony).to.be.an(Object);
   });
 
   describe('.alphabets', function() {
-    afterEach(function() {
-      delete phony.alphabets.foo;
-    });
-
     it('should return a map of available alphabets', function() {
       expect(phony.alphabets).to.be.an(Object);
       expect(phony.alphabets).to.only.have.keys([
@@ -126,6 +126,16 @@ describe('phony', function() {
 
     it('should return an empty string if the alphabet does not exist', function() {
       expect(phony.from('Echo', {alphabet: 'foo'})).to.be('');
+    });
+
+    it('should return an empty string if the alphabet has no character mappings', function() {
+      phony.alphabets.foo = {};
+
+      expect(phony.from('Alpha', {alphabet: 'foo'})).to.be('');
+    });
+
+    it('should ignore invalid phonetics', function() {
+      expect(phony.from('Alfa Foo Zulu')).to.be('AZ');
     });
 
     it('should ignore case', function() {
@@ -230,6 +240,16 @@ describe('phony', function() {
 
     it('should return an empty string if the alphabet does not exist', function() {
       expect(phony.to('foo', {alphabet: 'foo'})).to.be('');
+    });
+
+    it('should return an empty string if the alphabet has no character mappings', function() {
+      phony.alphabets.foo = {};
+
+      expect(phony.to('A', {alphabet: 'foo'})).to.be('');
+    });
+
+    it('should ignore invalid characters', function() {
+      expect(phony.to('A@Z')).to.be('Alfa Zulu');
     });
 
     it('should ignore case', function() {

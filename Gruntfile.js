@@ -5,24 +5,44 @@ module.exports = function(grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
+    blanket: {
+      coverage: {
+        src: ['src'],
+        dest: 'coverage/src'
+      }
+    },
+
     clean: {
-      docs: ['docs']
+      coverage: ['coverage'],
+      dist: ['dist', 'docs']
+    },
+
+    copy: {
+      coverage: {
+        expand: true,
+        src: ['test/**'],
+        dest: 'coverage/'
+      },
+      dist: {
+        src: ['src/phony.js'],
+        dest: 'dist/phony.js'
+      }
     },
 
     eslint: {
       target: [
         'Gruntfile.js',
-        'phony.js',
+        'src/**/*.js',
         'test/**/*.js'
       ]
     },
 
     jsdoc: {
-      all: {
+      dist: {
         options: {
           destination: 'docs'
         },
-        src: ['phony.js']
+        src: ['src/**/*.js']
       }
     },
 
@@ -32,13 +52,27 @@ module.exports = function(grunt) {
           reporter: 'spec'
         },
         src: ['test/**/*-test.js']
+      },
+      coverage: {
+        options: {
+          captureFile: 'coverage/results.html',
+          quiet: true,
+          reporter: 'html-cov'
+        },
+        src: ['coverage/test/**/*-test.js']
+      },
+      'travis-cov': {
+        options: {
+          reporter: 'travis-cov'
+        },
+        src: ['coverage/test/**/*-test.js']
       }
     },
 
     uglify: {
-      all: {
+      dist: {
         files: {
-          'phony.min.js': 'phony.js'
+          'dist/phony.min.js': 'dist/phony.js'
         },
         options: {
           banner: [
@@ -48,21 +82,23 @@ module.exports = function(grunt) {
           ].join(''),
           report: 'min',
           sourceMap: true,
-          sourceMapName: 'phony.min.map'
+          sourceMapName: 'dist/phony.min.map'
         }
       }
     },
 
     watch: {
-      all: {
-        files: '**/*.js',
+      test: {
+        files: 'src/**/*.js',
         tasks: ['test']
       }
     }
 
   });
 
+  grunt.loadNpmTasks('grunt-blanket');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-eslint');
@@ -70,7 +106,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('dist', ['test', 'uglify', 'docs']);
-  grunt.registerTask('docs', ['clean:docs', 'jsdoc']);
-  grunt.registerTask('test', ['eslint', 'mochaTest']);
+  grunt.registerTask('dist', ['test', 'clean:dist', 'copy:dist', 'uglify', 'jsdoc']);
+  grunt.registerTask('test', ['eslint', 'clean:coverage', 'blanket', 'copy:coverage', 'mochaTest']);
 };
