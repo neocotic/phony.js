@@ -14,8 +14,7 @@
 extensible characters.
 
 [![Build Status](https://img.shields.io/travis/neocotic/phony.js/develop.svg?style=flat-square)][1]
-[![Code Climate](https://img.shields.io/codeclimate/github/neocotic/phony.js.svg?style=flat-square)][10]
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/neocotic/phony.js.svg?style=flat-square)][11]
+[![Test Coverage](https://img.shields.io/coveralls/neocotic/phony.js/develop.svg?style=flat-square)][10]
 [![Dependency Status](https://img.shields.io/david/dev/neocotic/phony.js.svg?style=flat-square)][4]
 [![License](https://img.shields.io/github/license/neocotic/phony.js.svg?style=flat-square)][9]
 [![Release](https://img.shields.io/github/tag/neocotic/phony.js.svg?style=flat-square)][5]
@@ -171,5 +170,4 @@ See [LICENSE.md][9] for more information on our MIT license.
 [7]: https://github.com/neocotic/phony.js/blob/master/AUTHORS.md
 [8]: https://github.com/neocotic/phony.js/blob/master/CONTRIBUTING.md
 [9]: https://github.com/neocotic/phony.js/blob/master/LICENSE.md
-[10]: https://codeclimate.com/github/neocotic/phony.js
-[11]: https://codeclimate.com/github/neocotic/phony.js/coverage
+[10]: https://coveralls.io/r/neocotic/phony.js

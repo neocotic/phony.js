@@ -30,7 +30,7 @@ module.exports = function(grunt) {
         force: true
       },
       coverage: {
-        src: ['coverage/results.info']
+        src: ['coverage/lcov.info']
       }
     },
 
@@ -114,6 +114,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-coveralls');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-mocha-test');
