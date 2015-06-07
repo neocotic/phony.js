@@ -13,11 +13,12 @@
 [phony.js][0] is a pure JavaScript library for translating to/from the [NATO phonetic alphabet][3] that supports
 extensible characters.
 
-[![Build Status](https://travis-ci.org/neocotic/phony.js.svg?branch=develop)][1]
-[![Code Climate](https://codeclimate.com/github/neocotic/phony.js/badges/gpa.svg)][10]
-[![Test Coverage](https://codeclimate.com/github/neocotic/phony.js/badges/coverage.svg)][11]
-[![Dependency Status](https://gemnasium.com/neocotic/phony.js.svg)][4]
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)][5]
+[![Build Status](https://img.shields.io/travis/neocotic/phony.js/develop.svg?style=flat-square)][1]
+[![Code Climate](https://img.shields.io/codeclimate/github/neocotic/phony.js.svg?style=flat-square)][10]
+[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/neocotic/phony.js.svg?style=flat-square)][11]
+[![Dependency Status](https://img.shields.io/david/dev/neocotic/phony.js.svg?style=flat-square)][4]
+[![License](https://img.shields.io/github/license/neocotic/phony.js.svg?style=flat-square)][9]
+[![Release](https://img.shields.io/github/tag/neocotic/phony.js.svg?style=flat-square)][5]
 
 ## Install
 
@@ -164,8 +165,8 @@ See [LICENSE.md][9] for more information on our MIT license.
 [1]: https://travis-ci.org/neocotic/phony.js
 [2]: https://twitter.com/neocotic
 [3]: https://en.wikipedia.org/wiki/NATO_phonetic_alphabet
-[4]: https://gemnasium.com/neocotic/phony.js
-[5]: http://gruntjs.com
+[4]: https://david-dm.org/neocotic/phony.js
+[5]: https://github.com/neocotic/phony.js
 [6]: https://github.com/neocotic/phony.js/issues
 [7]: https://github.com/neocotic/phony.js/blob/master/AUTHORS.md
 [8]: https://github.com/neocotic/phony.js/blob/master/CONTRIBUTING.md
