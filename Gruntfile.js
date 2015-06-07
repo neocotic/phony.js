@@ -22,10 +22,6 @@ module.exports = function(grunt) {
         expand: true,
         src: ['test/**'],
         dest: 'coverage/'
-      },
-      dist: {
-        src: ['src/phony.js'],
-        dest: 'dist/phony.js'
       }
     },
 
@@ -89,7 +85,7 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         files: {
-          'dist/phony.min.js': 'dist/phony.js'
+          'dist/phony.min.js': 'src/phony.js'
         },
         options: {
           banner: [
@@ -123,6 +119,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('dist', ['test', 'clean:dist', 'copy:dist', 'uglify', 'jsdoc']);
+  grunt.registerTask('dist', ['test', 'clean:dist', 'uglify', 'jsdoc']);
   grunt.registerTask('test', ['eslint', 'clean:coverage', 'blanket', 'copy:coverage', 'mochaTest']);
 };
