@@ -40,11 +40,12 @@ string to the `to` and `from` functions respectively.
 Both of which also accept an optional `options` parameter which can currently contain the following (all of which are
 optional themselves):
 
-| Option         | Description                                              | Default   |
-| -------------- | -------------------------------------------------------- | --------- |
-| alphabet       | Name of the alphabet to be used to translate the message | `"itu"`   |
-| letterSplitter | Sequence of characters to split letters                  | `" "`     |
-| wordSplitter   | Sequence of characters to split words                    | `"space"` |
+| Option         | Description                                                  | Default   |
+| -------------- | ------------------------------------------------------------ | --------- |
+| alphabet       | Name of the alphabet to be used to translate the message     | `"itu"`   |
+| cache          | Whether to cache built alphabets when calling `from` or `to` | `true`    |
+| letterSplitter | Sequence of characters to split letters                      | `" "`     |
+| wordSplitter   | Sequence of characters to split words                        | `"space"` |
 
 It's important to note that the same options should be used in order for bidirectional translations to work. Some of
 these strings are used to build regular expressions (or can be regular expressions), so it's recommended to
@@ -105,6 +106,24 @@ phony.from('Hello Oscar World', options);
 //=> "HOW"
 ```
 
+#### `clearCache()`
+
+Clears any previously built alphabets that may have been cached by `phony.from` and/or `phony.to`. This can be useful
+when making modifications to alphabets and having them picked up.
+
+``` javascript
+phony.to('SOS');
+//=> "Sierra Oscar Sierra"
+
+phony.alphabets.itu.characters['O'] = 'Oompa';
+phony.clearCache();
+
+phony.to('SOS');
+//=> "Sierra Oompa Sierra"
+```
+
+The cache can also be bypassed by using the `cache` option.
+
 #### `defaults`
 
 This is a hash of default values to be applied to the optional `options` parameter and exposed to allow you to override
@@ -120,6 +139,7 @@ phony.to('A');
 ### Miscellaneous
 
 #### `noConflict()`
+
 Returns `phony` in a no-conflict state, reallocating the `phony` global variable name to its previous owner, where
 possible.
 
@@ -135,6 +155,7 @@ This is really just intended for use within a browser.
 ```
 
 #### `VERSION`
+
 The current version of `phony`.
 
 ``` javascript
