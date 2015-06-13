@@ -7,8 +7,8 @@ module.exports = function(grunt) {
 
     blanket: {
       coverage: {
-        src: ['src'],
-        dest: 'coverage/src'
+        src: ['lib'],
+        dest: 'coverage/lib'
       }
     },
 
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
     eslint: {
       target: [
         'Gruntfile.js',
-        'src/**/*.js',
+        'lib/**/*.js',
         'test/**/*.js'
       ]
     },
@@ -47,7 +47,7 @@ module.exports = function(grunt) {
         options: {
           destination: 'docs'
         },
-        src: ['src/**/*.js']
+        src: ['lib/**/*.js']
       }
     },
 
@@ -85,7 +85,7 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         files: {
-          'dist/phony.min.js': 'src/phony.js'
+          'dist/phony.min.js': 'lib/phony.js'
         },
         options: {
           banner: [
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
 
     watch: {
       test: {
-        files: 'src/**/*.js',
+        files: 'lib/**/*.js',
         tasks: ['test']
       }
     }

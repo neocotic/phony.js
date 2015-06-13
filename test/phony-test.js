@@ -5,7 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var q = require('q');
 
-var phony = require('../src/phony');
+var phony = require('../lib/phony');
 
 /**
  * The regular expression used to find and replace EOL characters.

@@ -47,7 +47,7 @@
     "q": "^1.4.1",
     "travis-cov": "^0.2.5"
   },
-  "main": "src/phony.js",
+  "main": "lib/phony.js",
   "scripts": {
     "coveralls": "grunt coveralls",
     "test": "grunt test"
