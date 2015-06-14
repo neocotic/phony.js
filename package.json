@@ -1,6 +1,6 @@
 {
   "name": "node-phony",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Library for translating to/from the phonetic alphabet",
   "homepage": "http://neocotic.com/phony.js",
   "bugs": {

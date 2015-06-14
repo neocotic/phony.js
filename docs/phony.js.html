@@ -30,7 +30,7 @@
  * Library for translating to/from the phonetic alphabet.
  *
  * @module phony
- * @version 1.2.0
+ * @version 1.2.1
  * @copyright Alasdair Mercer 2015
  * @license MIT
  */
@@ -76,6 +76,8 @@
    *
    * @typedef {Object} PhonyOptions
    * @property {String} [alphabet="itu"] - The default name of the alphabet to be used for the translation.
+   * @property {Boolean} [cache=true] - Whether a cache should be used for built alphabets to to improve performance.
+   * This cache can be disabled and/or cleared to avoid when modifying alphabets.
    * @property {String} [letterSplitter=" "] - The default string to be used to split alphabetic letters (may be passed
    * to &lt;code>RegExp&lt;/code> constructor).
    * @property {String} [wordSplitter="space"] - The default string to be used to split words (may be passed to
@@ -98,6 +100,69 @@
    * @type {*}
    */
   var previousPhony = root.phony;
+
+  /**
+   * A cache of built alphabets that can be used to improve performance and avoid unnecessary rebuilds of the same
+   * alphabets.
+   * &lt;p/>
+   * This cache can be cleared at any time by using {@linkcode phony.clearCache} or bypassed on a case-by-case basis
+   * via the &lt;code>cache&lt;/code> option.
+   *
+   * @access private
+   * @type {Object.&lt;String, Object&lt;String, String>>}
+   */
+  var alphabetCache = {};
+
+  /**
+   * Populates the specified &lt;code>target&lt;/code> mapping with key/value pairs extracted from the character mapping from
+   * the named alphabet those from the fallback chain, where applicable.
+   * &lt;p/>
+   * The key/value pairs are determined by the return value of the &lt;code>iterator&lt;/code> provided, which should provide
+   * a simple two-element array where the first element will be used as the key and the second as the value. However,
+   * that key/value pair will only be set on &lt;code>target&lt;/code> if a previous alphabet hasn't already set the same
+   * key.
+   *
+   * @param {Object.&lt;String, String>} target - the mapping to be populated
+   * @param {String} name - the name of the alphabet to be built
+   * @param {String} method - the name of the method responsible for building this alphabet (used for caching purposes)
+   * @param {Boolean} cache - &lt;code>true&lt;/code> to check and use a previously built and cached alphabet or caching this
+   * one after building it if not previously cached; otherwise &lt;code>false&lt;/code>
+   * @param {Function} iterator - iterator which will be passed a character and phonetic mapping and needs to return a
+   * two-element array for the key/value mapping to be set on &lt;code>target&lt;/code>
+   * @returns {Object.&lt;String, String>} The populated &lt;code>target&lt;/code>.
+   * @access private
+   */
+  function buildAlphabet(target, name, method, cache, iterator) {
+    var alphabet = phony.alphabets[name];
+
+    if (!alphabet) {
+      return target;
+    }
+
+    var cacheHash = name + ':' + method;
+
+    if (cache &amp;&amp; alphabetCache[cacheHash]) {
+      return alphabetCache[cacheHash];
+    }
+
+    each(alphabet.characters, function(character, phonetic) {
+      var keyValue = iterator(character, phonetic);
+      var key = keyValue[0];
+      var value = keyValue[1];
+
+      if (!target.hasOwnProperty(key)) {
+        target[key] = value;
+      }
+    });
+
+    buildAlphabet(target, alphabet.fallback, method, false, iterator);
+
+    if (cache) {
+      alphabetCache[cacheHash] = target;
+    }
+
+    return target;
+  }
 
   /**
    * Iterates over a given &lt;code>object&lt;/code>.
@@ -133,62 +198,6 @@
     }
 
     return object;
-  }
-
-  /**
-   * Returns the character mapped to the specified &lt;code>phonetic&lt;/code> from the alphabet with the given
-   * &lt;code>name&lt;/code>, where possible.
-   * &lt;p/>
-   * If the named alphabet does not contain a mapping for &lt;code>phonetic&lt;/code> but has a fallback alphabet configured,
-   * then that alphabet will be checked.
-   *
-   * @param {String} name - the name of the alphabet
-   * @param {String} phonetic - the phonetic string whose alphabet character mapping is to be returned
-   * @returns {String} The character mapped to &lt;code>phonetic&lt;/code> for the named alphabet or it's configured
-   * fallback.
-   * @access private
-   */
-  function getAlphabetCharacter(name, phonetic) {
-    var alphabet = phony.alphabets[name];
-    var character;
-
-    if (alphabet) {
-      each(alphabet.characters, function(ch, ph) {
-        if (ph === phonetic) {
-          character = ch;
-        }
-      });
-
-      if (typeof character === 'undefined' &amp;&amp; typeof alphabet.fallback !== 'undefined') {
-        character = getAlphabetCharacter(alphabet.fallback, phonetic);
-      }
-    }
-
-    return character;
-  }
-
-  /**
-   * Returns the phonetic mapped to the specified &lt;code>character&lt;/code> from the alphabet with the given
-   * &lt;code>name&lt;/code>, where possible.
-   * &lt;p/>
-   * If the named alphabet does not contain a mapping for &lt;code>character&lt;/code> but has a fallback alphabet
-   * configured, then that alphabet will be checked.
-   *
-   * @param {String} name - the name of the alphabet
-   * @param {String} character - the character whose alphabet phonetic mapping is to be returned
-   * @returns {String} The phonetic mapped to &lt;code>character&lt;/code> for the named alphabet or it's configured
-   * fallback.
-   * @access private
-   */
-  function getAlphabetPhonetic(name, character) {
-    var alphabet = phony.alphabets[name];
-    var phonetic = alphabet.characters &amp;&amp; alphabet.characters[character];
-
-    if (typeof phonetic === 'undefined' &amp;&amp; alphabet &amp;&amp; typeof alphabet.fallback !== 'undefined') {
-      phonetic = getAlphabetPhonetic(alphabet.fallback, character);
-    }
-
-    return phonetic;
   }
 
   /**
@@ -266,7 +275,7 @@
    * @constant
    * @type {String}
    */
-  phony.VERSION = '1.2.0';
+  phony.VERSION = '1.2.1';
 
   /**
    * The configurations for the initially supported phonetic alphabets.
@@ -364,8 +373,24 @@
    */
   phony.defaults = {
     alphabet: 'itu',
+    cache: true,
     letterSplitter: ' ',
     wordSplitter: 'space'
+  };
+
+  /**
+   * Clears any previously cached built alphabets.
+   * &lt;p/>
+   * This can be useful for when modifications have been made to the alphabet mapping.
+   *
+   * @returns {Object} A reference to this {@linkcode phony} for chaining.
+   * @access public
+   * @static
+   */
+  phony.clearCache = function() {
+    alphabetCache = {};
+
+    return this;
   };
 
   /**
@@ -392,6 +417,10 @@
       return result;
     }
 
+    var alphabet = buildAlphabet({}, options.alphabet, 'from', options.cache, function(character, phonetic) {
+      return [phonetic, character];
+    });
+
     // Iterates over each word
     each(value, function(word, i) {
       // Inserts space between each word
@@ -402,7 +431,7 @@
       // Iterates over each phonetic representation in the word
       each(word, function(phonetic) {
         // Reverse engineers character from phonetic representation
-        var character = getAlphabetCharacter(options.alphabet, phonetic);
+        var character = alphabet[phonetic];
 
         // Checks if character is supported
         if (typeof character === 'string') {
@@ -437,6 +466,10 @@
       return result;
     }
 
+    var alphabet = buildAlphabet({}, options.alphabet, 'to', options.cache, function(character, phonetic) {
+      return [character, phonetic];
+    });
+
     // Iterates over each word
     each(value, function(word, i) {
       // Inserts wordSplitter option between each word
@@ -447,7 +480,7 @@
       // Iterates over each character in the word
       each(word, function(character, j) {
         // Reverse engineers character from phonetic representation
-        var phonetic = getAlphabetPhonetic(options.alphabet, character);
+        var phonetic = alphabet[character];
 
         // Checks if phonetic representation is supported
         if (typeof phonetic === 'string') {
@@ -496,7 +529,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Sat Jun 06 2015 18:44:04 GMT+0100 (GMT Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Sun Jun 14 2015 01:23:35 GMT+0100 (GMT Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
