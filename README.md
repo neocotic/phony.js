@@ -13,11 +13,11 @@
 [phony.js][0] is a pure JavaScript library for translating to/from the [NATO phonetic alphabet][3] that supports
 extensible characters.
 
-[![Build Status](https://travis-ci.org/neocotic/phony.js.svg?branch=develop)][1]
-[![Code Climate](https://codeclimate.com/github/neocotic/phony.js/badges/gpa.svg)][10]
-[![Test Coverage](https://codeclimate.com/github/neocotic/phony.js/badges/coverage.svg)][11]
-[![Dependency Status](https://gemnasium.com/neocotic/phony.js.svg)][4]
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)][5]
+[![Build Status](https://img.shields.io/travis/neocotic/phony.js/develop.svg?style=flat-square)][1]
+[![Test Coverage](https://img.shields.io/coveralls/neocotic/phony.js/develop.svg?style=flat-square)][10]
+[![Dependency Status](https://img.shields.io/david/dev/neocotic/phony.js.svg?style=flat-square)][4]
+[![License](https://img.shields.io/github/license/neocotic/phony.js.svg?style=flat-square)][9]
+[![Release](https://img.shields.io/github/tag/neocotic/phony.js.svg?style=flat-square)][5]
 
 ## Install
 
@@ -40,11 +40,12 @@ string to the `to` and `from` functions respectively.
 Both of which also accept an optional `options` parameter which can currently contain the following (all of which are
 optional themselves):
 
-| Option         | Description                                              | Default   |
-| -------------- | -------------------------------------------------------- | --------- |
-| alphabet       | Name of the alphabet to be used to translate the message | `"itu"`   |
-| letterSplitter | Sequence of characters to split letters                  | `" "`     |
-| wordSplitter   | Sequence of characters to split words                    | `"space"` |
+| Option         | Description                                                  | Default   |
+| -------------- | ------------------------------------------------------------ | --------- |
+| alphabet       | Name of the alphabet to be used to translate the message     | `"itu"`   |
+| cache          | Whether to cache built alphabets when calling `from` or `to` | `true`    |
+| letterSplitter | Sequence of characters to split letters                      | `" "`     |
+| wordSplitter   | Sequence of characters to split words                        | `"space"` |
 
 It's important to note that the same options should be used in order for bidirectional translations to work. Some of
 these strings are used to build regular expressions (or can be regular expressions), so it's recommended to
@@ -105,6 +106,24 @@ phony.from('Hello Oscar World', options);
 //=> "HOW"
 ```
 
+#### `clearCache()`
+
+Clears any previously built alphabets that may have been cached by `phony.from` and/or `phony.to`. This can be useful
+when making modifications to alphabets and having them picked up.
+
+``` javascript
+phony.to('SOS');
+//=> "Sierra Oscar Sierra"
+
+phony.alphabets.itu.characters['O'] = 'Oompa';
+phony.clearCache();
+
+phony.to('SOS');
+//=> "Sierra Oompa Sierra"
+```
+
+The cache can also be bypassed by using the `cache` option.
+
 #### `defaults`
 
 This is a hash of default values to be applied to the optional `options` parameter and exposed to allow you to override
@@ -120,6 +139,7 @@ phony.to('A');
 ### Miscellaneous
 
 #### `noConflict()`
+
 Returns `phony` in a no-conflict state, reallocating the `phony` global variable name to its previous owner, where
 possible.
 
@@ -135,11 +155,12 @@ This is really just intended for use within a browser.
 ```
 
 #### `VERSION`
+
 The current version of `phony`.
 
 ``` javascript
 phony.VERSION;
-//=> "1.2.0"
+//=> "1.2.1"
 ```
 
 ## Bugs
@@ -164,11 +185,10 @@ See [LICENSE.md][9] for more information on our MIT license.
 [1]: https://travis-ci.org/neocotic/phony.js
 [2]: https://twitter.com/neocotic
 [3]: https://en.wikipedia.org/wiki/NATO_phonetic_alphabet
-[4]: https://gemnasium.com/neocotic/phony.js
-[5]: http://gruntjs.com
+[4]: https://david-dm.org/neocotic/phony.js
+[5]: https://github.com/neocotic/phony.js
 [6]: https://github.com/neocotic/phony.js/issues
 [7]: https://github.com/neocotic/phony.js/blob/master/AUTHORS.md
 [8]: https://github.com/neocotic/phony.js/blob/master/CONTRIBUTING.md
 [9]: https://github.com/neocotic/phony.js/blob/master/LICENSE.md
-[10]: https://codeclimate.com/github/neocotic/phony.js
-[11]: https://codeclimate.com/github/neocotic/phony.js/coverage
+[10]: https://coveralls.io/r/neocotic/phony.js

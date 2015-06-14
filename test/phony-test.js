@@ -5,7 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var q = require('q');
 
-var phony = require('../src/phony');
+var phony = require('../lib/phony');
 
 /**
  * The regular expression used to find and replace EOL characters.
@@ -32,6 +32,8 @@ function loadFixture(filePath) {
 describe('phony', function() {
   afterEach(function() {
     delete phony.alphabets.foo;
+
+    phony.clearCache();
   });
 
   it('should be exported as an object', function() {
@@ -113,6 +115,31 @@ describe('phony', function() {
     });
   });
 
+  describe('.clearCache', function() {
+    it('should clear cache of previously built alphabets', function() {
+      var options = {alphabet: 'foo'};
+
+      phony.alphabets.foo = {
+        characters: {
+          'A': 'alpha'
+        }
+      };
+
+      expect(phony.to('a', options)).to.be('Alpha');
+      expect(phony.from('Alpha', options)).to.be('A');
+
+      phony.alphabets.foo.characters.A = 'alfa';
+      phony.clearCache();
+
+      expect(phony.to('a', options)).to.be('Alfa');
+      expect(phony.from('Alfa', options)).to.be('A');
+    });
+
+    it('should return a reference to phony', function() {
+      expect(phony.clearCache()).to.be(phony);
+    });
+  });
+
   describe('.from', function() {
     it('should return an empty string if no message is provided', function() {
       expect(phony.from('')).to.be('');
@@ -148,6 +175,42 @@ describe('phony', function() {
 
     it('should throw an error if message is not a string', function() {
       expect(phony.from).withArgs(true).to.throwError();
+    });
+
+    it('should cache built alphabets by default', function() {
+      var options = {alphabet: 'foo'};
+
+      phony.alphabets.foo = {
+        characters: {
+          'A': 'alpha'
+        }
+      };
+
+      expect(phony.from('Alpha', options)).to.be('A');
+
+      phony.alphabets.foo.characters.A = 'alfa';
+
+      expect(phony.from('Alpha', options)).to.be('A');
+      expect(phony.from('Alfa', options)).to.be('');
+    });
+
+    it('should support cache option', function() {
+      var options = {
+        alphabet: 'foo',
+        cache: false
+      };
+
+      phony.alphabets.foo = {
+        characters: {
+          'A': 'alpha'
+        }
+      };
+
+      expect(phony.from('Alpha', options)).to.be('A');
+
+      phony.alphabets.foo.characters.A = 'alfa';
+
+      expect(phony.from('Alfa', options)).to.be('A');
     });
 
     it('should translate using the splitter options', function() {
@@ -262,6 +325,41 @@ describe('phony', function() {
 
     it('should throw an error if message is not a string', function() {
       expect(phony.to).withArgs(true).to.throwError();
+    });
+
+    it('should cache built alphabets by default', function() {
+      var options = {alphabet: 'foo'};
+
+      phony.alphabets.foo = {
+        characters: {
+          'A': 'alpha'
+        }
+      };
+
+      expect(phony.to('a', options)).to.be('Alpha');
+
+      phony.alphabets.foo.characters.A = 'alfa';
+
+      expect(phony.to('a', options)).to.be('Alpha');
+    });
+
+    it('should support cache option', function() {
+      var options = {
+        alphabet: 'foo',
+        cache: false
+      };
+
+      phony.alphabets.foo = {
+        characters: {
+          'A': 'alpha'
+        }
+      };
+
+      expect(phony.to('a', options)).to.be('Alpha');
+
+      phony.alphabets.foo.characters.A = 'alfa';
+
+      expect(phony.to('a', options)).to.be('Alfa');
     });
 
     it('should translate using the splitter options', function() {

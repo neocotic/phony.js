@@ -1,6 +1,6 @@
 {
   "name": "phony",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Library for translating to/from the phonetic alphabet",
   "homepage": "http://neocotic.com/phony.js",
   "bugs": {
@@ -27,7 +27,7 @@
     "type": "git",
     "url": "git://github.com/neocotic/phony.js.git"
   },
-  "main": "src/phony.js",
+  "main": "lib/phony.js",
   "ignore": [
     "**/.*",
     "docs",

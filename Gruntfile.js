@@ -7,8 +7,8 @@ module.exports = function(grunt) {
 
     blanket: {
       coverage: {
-        src: ['src'],
-        dest: 'coverage/src'
+        src: ['lib'],
+        dest: 'coverage/lib'
       }
     },
 
@@ -22,10 +22,6 @@ module.exports = function(grunt) {
         expand: true,
         src: ['test/**'],
         dest: 'coverage/'
-      },
-      dist: {
-        src: ['src/phony.js'],
-        dest: 'dist/phony.js'
       }
     },
 
@@ -34,14 +30,14 @@ module.exports = function(grunt) {
         force: true
       },
       coverage: {
-        src: ['coverage/results.info']
+        src: ['coverage/lcov.info']
       }
     },
 
     eslint: {
       target: [
         'Gruntfile.js',
-        'src/**/*.js',
+        'lib/**/*.js',
         'test/**/*.js'
       ]
     },
@@ -51,7 +47,7 @@ module.exports = function(grunt) {
         options: {
           destination: 'docs'
         },
-        src: ['src/**/*.js']
+        src: ['lib/**/*.js']
       }
     },
 
@@ -89,7 +85,7 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         files: {
-          'dist/phony.min.js': 'dist/phony.js'
+          'dist/phony.min.js': 'lib/phony.js'
         },
         options: {
           banner: [
@@ -106,7 +102,7 @@ module.exports = function(grunt) {
 
     watch: {
       test: {
-        files: 'src/**/*.js',
+        files: 'lib/**/*.js',
         tasks: ['test']
       }
     }
@@ -118,11 +114,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-coveralls');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('default', ['test']);
-  grunt.registerTask('dist', ['test', 'clean:dist', 'copy:dist', 'uglify', 'jsdoc']);
+  grunt.registerTask('dist', ['test', 'clean:dist', 'uglify', 'jsdoc']);
   grunt.registerTask('test', ['eslint', 'clean:coverage', 'blanket', 'copy:coverage', 'mochaTest']);
 };
