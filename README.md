@@ -15,7 +15,8 @@ extensible characters.
 
 [![Build Status](https://img.shields.io/travis/neocotic/phony.js/develop.svg?style=flat-square)][1]
 [![Test Coverage](https://img.shields.io/coveralls/neocotic/phony.js/develop.svg?style=flat-square)][10]
-[![Dependency Status](https://img.shields.io/david/dev/neocotic/phony.js.svg?style=flat-square)][4]
+[![Dependency Status](https://img.shields.io/david/neocotic/phony.js.svg?style=flat-square)][4]
+[![Dev Dependency Status](https://img.shields.io/david/dev/neocotic/phony.js.svg?style=flat-square)][11]
 [![License](https://img.shields.io/github/license/neocotic/phony.js.svg?style=flat-square)][9]
 [![Release](https://img.shields.io/github/tag/neocotic/phony.js.svg?style=flat-square)][5]
 
@@ -29,8 +30,6 @@ $ npm install node-phony
 # OR; for the browser:
 $ bower install phony
 ```
-
-This library has no dependencies on any other library.
 
 ## Usage
 
@@ -51,6 +50,28 @@ It's important to note that the same options should be used in order for bidirec
 these strings are used to build regular expressions (or can be regular expressions), so it's recommended to
 familiarized yourself with the usage of the options before change them, just so you know on which you need to escape
 any `RegExp` special characters.
+
+### Command Line
+
+If you installed `node-phony` globally using npm you can use this libraries built-in command line interface:
+
+```
+Usage: phony [options] [command]
+
+
+Commands:
+
+  from <message>  translates the message to the phonetic alphabet
+  to <message>    translates the message from the phonetic alphabet
+
+Options:
+
+  -h, --help                     output usage information
+  -V, --version                  output the version number
+  -a, --alphabet [name]          name of the alphabet to be used
+  -l, --letter-splitter [value]  sequence of characters to split letters
+  -w, --word-splitter [value]    sequence of characters to split words
+```
 
 ### `to(message[, options])`
 
@@ -192,3 +213,4 @@ See [LICENSE.md][9] for more information on our MIT license.
 [8]: https://github.com/neocotic/phony.js/blob/master/CONTRIBUTING.md
 [9]: https://github.com/neocotic/phony.js/blob/master/LICENSE.md
 [10]: https://coveralls.io/r/neocotic/phony.js
+[11]: https://david-dm.org/neocotic/phony.js#info=devDependencies
