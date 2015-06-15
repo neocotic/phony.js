@@ -1,3 +1,7 @@
+## Version 1.3.0, 2015.06.15
+
+* [#8](https://github.com/neocotic/phony.js/issues/8): Add command-line interface
+
 ## Version 1.2.1, 2015.06.14
 
 * [#9](https://github.com/neocotic/phony.js/issues/9): Improve performance of core functions

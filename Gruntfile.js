@@ -37,6 +37,7 @@ module.exports = function(grunt) {
     eslint: {
       target: [
         'Gruntfile.js',
+        'bin/phony',
         'lib/**/*.js',
         'test/**/*.js'
       ]
