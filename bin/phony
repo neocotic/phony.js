@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var program = require('commander');
+var os = require('os');
+
+var phony = require('../lib/phony');
+
+program
+  .version(phony.VERSION)
+  .option('-a, --alphabet [name]', 'name of the alphabet to be used', phony.defaults.alphabet)
+  .option('-l, --letter-splitter [value]', 'sequence of characters to split letters', phony.defaults.letterSplitter)
+  .option('-w, --word-splitter [value]', 'sequence of characters to split words', phony.defaults.wordSplitter);
+
+function translate(methodName) {
+  return function(message) {
+    var options = {
+      alphabet: program.alphabet,
+      letterSplitter: program.letterSplitter,
+      wordSplitter: program.wordSplitter
+    };
+
+    process.stdout.write(phony[methodName](message, options) + os.EOL);
+  };
+}
+
+program
+  .command('from <message>')
+  .description('translates the message to the phonetic alphabet')
+  .action(translate('from'));
+
+program
+  .command('to <message>')
+  .description('translates the message from the phonetic alphabet')
+  .action(translate('to'));
+
+program.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}
